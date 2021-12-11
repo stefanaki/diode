@@ -1,38 +1,63 @@
 const funcs = require('./../utilities/functions');
 const pool = require('./../config/db');
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     const { stationID } = req.params;
     const { date_from } = req.params;
     const { date_to } = req.params;
     const datetimeNow = funcs.getRequestTimestamp();
 
-    // define query
-    const query = `SELECT 
-                  s.op_name AS StationOperator,
-                  COUNT(s.st_name) AS NumberOfPasses
-                FROM
-                  stations s
-                INNER JOIN passes p ON s.st_id = p.station_id
-                WHERE (pass_timestamp 
-                       BETWEEN "${date_from}" AND "${date_to}")
-                         AND s.st_id =  "${stationID}";`;
+    // Fetch operator name query
+    const operatorQuery = `SELECT op_name FROM stations WHERE  op_name = ?`;
 
-    pool.getConnection((err, connection) => {
-        if (err) throw err;
-        connection.query(query, (err, result, fields) => {
-            connection.release(); // return the connection to pool
-            if (err) throw err;
-            res.status(200).send({
-                Station: `${stationID}`,
-                StationOperator: `${result[0].StationOperator}`,
-                RequestTimestamp: `${datetimeNow}`,
-                PeriodFrom: `${date_from}`,
-                PeriodTo: `${date_to}`,
-                NumberOfPasses: `${result[0].NumberOfPasses}`
-                // Passes List not Added Yet
-                // ti akrivws tha exei ayti i lista???
+    // Fetch Pass List query
+    const passesListQuery = `
+            SELECT p.pass_id as PassID, p.pass_timestamp as PassTimeStamp,
+            t.vehicle_id as VehicleID, t.tag_provider as TagProvider,
+            CASE
+                WHEN t.tag_provider = ? THEN "home"
+                ELSE "away"
+            END as PassType,
+            p.pass_charge as PassCharge
+            FROM passes p JOIN tags t ON (p.tag_id = t.tag_id)
+            WHERE p.station_id = ? AND p.pass_timestamp BETWEEN ? AND ?
+            ORDER BY p.pass_timestamp ASC`;
+
+    try {
+        const connection = await pool.getConnection();
+        const operatorQueryRes = await connection.query(operatorQuery, [
+            stationID
+        ]);
+        const operatorID = operatorQueryRes[0].op_name;
+
+        let queryResult = await connection.query(passesListQuery, [
+            operatorID,
+            stationID,
+            date_from,
+            date_to
+        ]);
+
+        // Parse result as JS object, compute total length, append PassIndex field
+        let queryResultList = JSON.parse(JSON.stringify(queryResult));
+        let NumberOfPasses = 0;
+        let i = 0;
+        queryResultList.forEach((pass) => {
+            NumberOfPasses += pass.length;
+            pass.forEach((p) => {
+                p.PassIndex = ++i;
             });
         });
-    });
+
+        res.status(200).json({
+            Station: stationID,
+            StationOperator: operatorID,
+            RequestTimestamp: datetimeNow,
+            PeriodFrom: date_from,
+            PeriodTo: date_to,
+            NumberOfPasses,
+            PassesList: queryResultList
+        });
+    } catch {
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
 };
