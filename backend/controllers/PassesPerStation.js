@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
     const datetimeNow = funcs.getRequestTimestamp();
 
     // Fetch operator name query
-    const operatorQuery = `SELECT op_name FROM stations WHERE  op_name = ?`;
+    const operatorQuery = `SELECT op_name FROM stations WHERE st_id = ?`;
 
     // Fetch Pass List query
     const passesListQuery = `
@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
         const operatorQueryRes = await connection.query(operatorQuery, [
             stationID
         ]);
-        const operatorID = operatorQueryRes[0].op_name;
+        const operatorID = operatorQueryRes[0][0].op_name;
 
         let queryResult = await connection.query(passesListQuery, [
             operatorID,
@@ -39,14 +39,8 @@ module.exports = async (req, res) => {
 
         // Parse result as JS object, compute total length, append PassIndex field
         let queryResultList = JSON.parse(JSON.stringify(queryResult));
-        let NumberOfPasses = 0;
         let i = 0;
-        queryResultList.forEach((pass) => {
-            NumberOfPasses += pass.length;
-            pass.forEach((p) => {
-                p.PassIndex = ++i;
-            });
-        });
+        queryResultList[0].forEach((pass) => (pass.PassIndex = ++i));
 
         res.status(200).json({
             Station: stationID,
@@ -54,8 +48,8 @@ module.exports = async (req, res) => {
             RequestTimestamp: datetimeNow,
             PeriodFrom: date_from,
             PeriodTo: date_to,
-            NumberOfPasses,
-            PassesList: queryResultList
+            NumberOfPasses: i,
+            PassesList: queryResultList[0]
         });
     } catch {
         res.status(500).json({ message: 'Internal Server Error' });
