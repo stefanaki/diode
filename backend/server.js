@@ -4,10 +4,11 @@ const PassesRouter = require('./routes/Passes');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT;
+const port = process.env.PORT;
 
 app.use(express.json());
 
-app.listen(PORT, () => console.log(`it's alive on http://localhost:${PORT}`));
-
 app.use('/interoperability/', PassesRouter);
+app.get('*', (req, res) => res.status(404).json({ message: 'Bad request: Endpoint not found' }));
+
+app.listen(port, () => console.log(`it's alive on http://localhost:${port}`));
