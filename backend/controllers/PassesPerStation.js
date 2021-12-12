@@ -1,11 +1,23 @@
 const funcs = require('./../utilities/functions');
 const pool = require('./../config/db');
+const moment = require('moment');
 
 module.exports = async (req, res) => {
-    const { stationID } = req.params;
-    const { date_from } = req.params;
-    const { date_to } = req.params;
-    const datetimeNow = funcs.getRequestTimestamp();
+    const { stationID, dateFrom, dateTo } = req.params;
+    const dateTimeNow = funcs.getRequestTimestamp();
+
+    if (
+        !moment(dateFrom, 'YYYY-MM-DD HH:mm:ss', true).isValid() ||
+        !moment(dateFrom, 'YYYY-MM-DD HH:mm:ss', true).isValid()
+    ) {
+        return res.status(400).json({ message: 'Bad request: Invalid date formats' });
+    }
+
+    if (moment(dateFrom, 'YYYY-MM-DD HH:mm:ss', true).diff(dateTo, 'YYYY-MM-DD HH:mm:ss', true) >= 0) {
+        return res.status(400).json({
+            message: 'Bad request: dateFrom should be smaller than dateTo'
+        });
+    }
 
     // Fetch operator name query
     const operatorQuery = `SELECT op_name FROM stations WHERE st_id = ?`;
@@ -25,17 +37,15 @@ module.exports = async (req, res) => {
 
     try {
         const connection = await pool.getConnection();
-        const operatorQueryRes = await connection.query(operatorQuery, [
-            stationID
-        ]);
+        const operatorQueryRes = await connection.query(operatorQuery, [stationID]);
+
+        if (!operatorQueryRes[0][0]) {
+            return res.status(404).json({ message: 'Bad request: Invalid stationID' });
+        }
+
         const operatorID = operatorQueryRes[0][0].op_name;
 
-        let queryResult = await connection.query(passesListQuery, [
-            operatorID,
-            stationID,
-            date_from,
-            date_to
-        ]);
+        let queryResult = await connection.query(passesListQuery, [operatorID, stationID, dateFrom, dateTo]);
 
         // Parse result as JS object, compute total length, append PassIndex field
         let queryResultList = JSON.parse(JSON.stringify(queryResult));
@@ -45,13 +55,13 @@ module.exports = async (req, res) => {
         res.status(200).json({
             Station: stationID,
             StationOperator: operatorID,
-            RequestTimestamp: datetimeNow,
-            PeriodFrom: date_from,
-            PeriodTo: date_to,
+            RequestTimestamp: dateTimeNow,
+            PeriodFrom: dateFrom,
+            PeriodTo: dateTo,
             NumberOfPasses: i,
             PassesList: queryResultList[0]
         });
     } catch {
-        res.status(500).json({ message: 'Internal Server Error' });
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
