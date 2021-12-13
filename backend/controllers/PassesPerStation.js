@@ -5,15 +5,13 @@ const moment = require('moment');
 module.exports = async (req, res) => {
     const { stationID, dateFrom, dateTo } = req.params;
     const dateTimeNow = funcs.getRequestTimestamp();
+    const format = 'YYYY-MM-DD HH:mm:ss';
 
-    if (
-        !moment(dateFrom, 'YYYY-MM-DD HH:mm:ss', true).isValid() ||
-        !moment(dateFrom, 'YYYY-MM-DD HH:mm:ss', true).isValid()
-    ) {
+    if (!moment(dateFrom, format, true).isValid() || !moment(dateFrom, format, true).isValid()) {
         return res.status(400).json({ message: 'Bad request: Invalid date formats' });
     }
 
-    if (moment(dateFrom, 'YYYY-MM-DD HH:mm:ss', true).diff(dateTo, 'YYYY-MM-DD HH:mm:ss', true) >= 0) {
+    if (moment(dateFrom, format, true).diff(dateTo, format, true) >= 0) {
         return res.status(400).json({
             message: 'Bad request: dateFrom should be smaller than dateTo'
         });
@@ -61,6 +59,8 @@ module.exports = async (req, res) => {
             NumberOfPasses: i,
             PassesList: queryResultList[0]
         });
+
+        connection.release();
     } catch {
         res.status(500).json({ message: 'Internal server error' });
     }
