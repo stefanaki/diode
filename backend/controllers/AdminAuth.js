@@ -1,6 +1,7 @@
 const pool = require('./../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const redisClient = require('../config/redis');
 
 const Login = async (req, res) => {
     try {
@@ -22,6 +23,19 @@ const Login = async (req, res) => {
             return res.status(404).json({ message: 'Invalid credentials' });
         }
     } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+const Logout = async (req, res) => {
+    try {
+        const token = req.header('X-OBSERVATORY-AUTH');
+        if (!token) return res.status(403).json({ message: 'Authentication token required' });
+
+        await redisClient.rPush('blacklisted_tokens', token);
+        res.status(200).json({ message: 'Log out successful' });
+    } catch (error) {
+        console.log(error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -58,4 +72,4 @@ const Register = async (req, res) => {
     }
 };
 
-module.exports = { Login, Register };
+module.exports = { Login, Logout, Register };
