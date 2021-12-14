@@ -12,10 +12,6 @@ const port = process.env.PORT;
 
 app.use(express.json());
 
-app.post('/welcome', auth, (req, res) =>
-    res.status(200).json({ message: 'Congrats, user system works correctly', user: req.user })
-);
-
 app.use('/interoperability/api/', AuthRouter);
 app.use('/interoperability/api/admin', auth, AdminRouter);
 app.use('/interoperability/api/', PassesRouter);
