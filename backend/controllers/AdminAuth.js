@@ -2,11 +2,12 @@ const pool = require('./../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const AdminLogin = async (req, res) => {
+const Login = async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        if (!(username && password)) return res.status(400).json({ message: 'Username and password required' });
+        if (!(username && password))
+            return res.status(400).json({ message: 'Username and password required' });
 
         const connection = await pool.getConnection();
         let user = await connection.query('SELECT * FROM admins where username = ?', [username]);
@@ -25,16 +26,18 @@ const AdminLogin = async (req, res) => {
     }
 };
 
-const AdminRegister = async (req, res) => {
+const Register = async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        if (!(username && password)) return res.status(400).json({ message: 'Username and password required' });
+        if (!(username && password))
+            return res.status(400).json({ message: 'Username and password required' });
 
         const connection = await pool.getConnection();
         let oldUser = await connection.query('SELECT * FROM admins WHERE username = ?', [username]);
 
-        if (oldUser[0][0]) res.status(409).json({ message: 'User with specified username already exists' });
+        if (oldUser[0][0])
+            res.status(409).json({ message: 'User with specified username already exists' });
 
         let encryptedPassword = await bcrypt.hash(password, 10);
         let token = jwt.sign({ username }, process.env.TOKEN_KEY, { expiresIn: '2h' });
@@ -45,10 +48,14 @@ const AdminRegister = async (req, res) => {
         ]);
 
         connection.release();
-        res.status(201).json({ message: 'Admin account created successfully', user: { username, password }, token });
+        res.status(201).json({
+            message: 'Admin account created successfully',
+            user: { username, password },
+            token
+        });
     } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
 
-module.exports = { AdminLogin, AdminRegister };
+module.exports = { Login, Register };

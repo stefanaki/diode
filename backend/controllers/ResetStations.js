@@ -3,7 +3,7 @@ const csvtojson = require('csvtojson');
 
 module.exports = async (req, res) => {
     try {
-        const stations = await csvtojson().fromFile(__dirname + '/../default/stations.csv');
+        const stations = await csvtojson().fromFile(__dirname + '/../sample_data/stations.csv');
         let arr = [];
         stations.forEach((st) => {
             arr.push([st.st_id, st.st_name, st.op_name]);

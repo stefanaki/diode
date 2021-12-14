@@ -3,8 +3,8 @@ const csvtojson = require('csvtojson');
 
 module.exports = async (req, res) => {
     try {
-        const vehicles = await csvtojson().fromFile(__dirname + '/../default/vehicles.csv');
-        const tags = await csvtojson().fromFile(__dirname + '/../default/tags.csv');
+        const vehicles = await csvtojson().fromFile(__dirname + '/../sample_data/vehicles.csv');
+        const tags = await csvtojson().fromFile(__dirname + '/../sample_data/tags.csv');
         let vehiclesArray = [];
         let tagsArray = [];
         vehicles.forEach((v) => {
@@ -18,8 +18,12 @@ module.exports = async (req, res) => {
         await connection.query('SET FOREIGN_KEY_CHECKS = 0');
         await connection.query('DELETE FROM vehicles');
         await connection.query('DELETE FROM tags');
-        await connection.query('INSERT INTO vehicles (vehicle_id, license_year) VALUES ?', [vehiclesArray]);
-        await connection.query('INSERT INTO tags (tag_id, vehicle_id, tag_provider) VALUES ?', [tagsArray]);
+        await connection.query('INSERT INTO vehicles (vehicle_id, license_year) VALUES ?', [
+            vehiclesArray
+        ]);
+        await connection.query('INSERT INTO tags (tag_id, vehicle_id, tag_provider) VALUES ?', [
+            tagsArray
+        ]);
         await connection.query('SET FOREIGN_KEY_CHECKS = 1');
 
         connection.release();
