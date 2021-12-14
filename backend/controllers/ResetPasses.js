@@ -11,7 +11,9 @@ module.exports = async (req, res) => {
         const connection = await pool.getConnection();
         await connection.query('DELETE FROM passes');
 
-        let oldUser = await connection.query('SELECT * FROM admins WHERE username = ?', [defaultUsername]);
+        let oldUser = await connection.query('SELECT * FROM admins WHERE username = ?', [
+            defaultUsername
+        ]);
         if (!oldUser[0][0]) {
             await connection.query('INSERT INTO admins (username, password) VALUES (?, ?)', [
                 defaultUsername,

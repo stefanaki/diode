@@ -43,7 +43,12 @@ module.exports = async (req, res) => {
 
         const operatorID = operatorQueryRes[0][0].op_name;
 
-        let queryResult = await connection.query(passesListQuery, [operatorID, stationID, dateFrom, dateTo]);
+        let queryResult = await connection.query(passesListQuery, [
+            operatorID,
+            stationID,
+            dateFrom,
+            dateTo
+        ]);
 
         // Parse result as JS object, compute total length, append PassIndex field
         let queryResultList = JSON.parse(JSON.stringify(queryResult));
