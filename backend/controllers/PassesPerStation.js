@@ -1,11 +1,10 @@
-const funcs = require('./../utilities/functions');
 const pool = require('./../config/db');
 const moment = require('moment');
 
 module.exports = async (req, res) => {
     const { stationID, dateFrom, dateTo } = req.params;
-    const dateTimeNow = funcs.getRequestTimestamp();
     const format = 'YYYY-MM-DD HH:mm:ss';
+    const dateTimeNow = moment().format(format);
 
     if (!moment(dateFrom, format, true).isValid() || !moment(dateFrom, format, true).isValid()) {
         return res.status(400).json({ message: 'Bad request: Invalid date formats' });
