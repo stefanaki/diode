@@ -11,6 +11,7 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/interoperability/api/', AuthRouter);
 app.use('/interoperability/api/admin', auth, AdminRouter);
