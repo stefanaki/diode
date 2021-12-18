@@ -1,28 +1,24 @@
+const fs = require('fs').promises;
+const csv = require('async-csv');
 const pool = require('./../config/db');
-const csvtojson = require('csvtojson');
 
 module.exports = async (req, res) => {
     try {
-        const vehicles = await csvtojson().fromFile(__dirname + '/../sample_data/vehicles.csv');
-        const tags = await csvtojson().fromFile(__dirname + '/../sample_data/tags.csv');
-        let vehiclesArray = [];
-        let tagsArray = [];
-        vehicles.forEach((v) => {
-            vehiclesArray.push([v.vehicle_id, v.license_year]);
-        });
-        tags.forEach((t) => {
-            tagsArray.push([t.tag_id, t.vehicle_id, t.tag_provider]);
-        });
+        let csvString = await fs.readFile(__dirname + '/../sample_data/vehicles.csv', 'utf-8');
+        const vehicles = await csv.parse(csvString);
+        csvString = await fs.readFile(__dirname + '/../sample_data/tags.csv', 'utf-8');
+        vehicles.shift();
+        tags.shift();
 
         const connection = await pool.getConnection();
         await connection.query('SET FOREIGN_KEY_CHECKS = 0');
         await connection.query('DELETE FROM vehicles');
         await connection.query('DELETE FROM tags');
         await connection.query('INSERT INTO vehicles (vehicle_id, license_year) VALUES ?', [
-            vehiclesArray
+            vehicles
         ]);
         await connection.query('INSERT INTO tags (tag_id, vehicle_id, tag_provider) VALUES ?', [
-            tagsArray
+            tags
         ]);
         await connection.query('SET FOREIGN_KEY_CHECKS = 1');
 
