@@ -7,8 +7,8 @@ module.exports = async (req, res, next) => {
     if (!token) return res.status(403).json({ message: 'Authentication token required' });
 
     try {
-        result = await redisClient.lPos('blacklisted_tokens', token);
-        if (result)
+        let isBlacklisted = await redisClient.lPos('blacklisted_tokens', token);
+        if (isBlacklisted)
             return res
                 .status(401)
                 .json({ message: 'User with specified token has logged out. Please log in.' });

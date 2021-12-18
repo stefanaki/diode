@@ -32,7 +32,7 @@ const Logout = async (req, res) => {
         const token = req.header('X-OBSERVATORY-AUTH');
         if (!token) return res.status(403).json({ message: 'Authentication token required' });
 
-        await redisClient.rPush('blacklisted_tokens', token);
+        await redisClient.rPushX('blacklisted_tokens', token, '7200');
         res.status(200).json({ message: 'Log out successful' });
     } catch (error) {
         console.log(error);
