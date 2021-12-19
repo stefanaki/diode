@@ -1,10 +1,8 @@
-//const csv = require('csv-express');
 const { parse } = require('json2csv');
 
 module.exports = (req, res, status, data) => {
     try {
         const format = req.query.format;
-        console.log(format);
         if (!format || format === 'json') return res.status(status).json(data);
         if (format !== 'csv') return res.status(400).json({ message: 'Invalid format option' });
 
