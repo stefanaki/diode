@@ -7,6 +7,7 @@ module.exports = async (req, res) => {
         let csvString = await fs.readFile(__dirname + '/../sample_data/vehicles.csv', 'utf-8');
         const vehicles = await csv.parse(csvString);
         csvString = await fs.readFile(__dirname + '/../sample_data/tags.csv', 'utf-8');
+        const tags = await csv.parse(csvString);
         vehicles.shift();
         tags.shift();
 
