@@ -17,7 +17,9 @@ module.exports = async (req, res) => {
     }
 
     // Fetch operator name query
-    const operatorQuery = `SELECT op_name FROM stations WHERE st_id = ?`;
+    const operatorQuery = `SELECT st_name, op_name FROM stations WHERE st_id = ?`;
+
+    const stationNameQuery = 'SELECT st_name FROM stations WHERE st_id = ?';
 
     // Fetch Pass List query
     const passesListQuery = `
@@ -41,6 +43,7 @@ module.exports = async (req, res) => {
         }
 
         const operatorID = operatorQueryRes[0][0].op_name;
+        const stationName = operatorQueryRes[0][0].st_name;
 
         let queryResult = await connection.query(passesListQuery, [
             operatorID,
@@ -55,7 +58,7 @@ module.exports = async (req, res) => {
         queryResultList[0].forEach((pass) => (pass.PassIndex = ++i));
 
         res.status(200).json({
-            Station: stationID,
+            Station: stationName,
             StationOperator: operatorID,
             RequestTimestamp: dateTimeNow,
             PeriodFrom: dateFrom,
