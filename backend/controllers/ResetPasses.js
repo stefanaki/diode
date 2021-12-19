@@ -1,5 +1,6 @@
 const pool = require('./../config/db');
 const bcrypt = require('bcryptjs');
+const sendResponse = require('../utilities/sendFormattedResponse');
 
 module.exports = async (req, res) => {
     try {
@@ -27,8 +28,8 @@ module.exports = async (req, res) => {
         }
 
         connection.release();
-        return res.status(200).json({ status: 'OK' });
+        sendResponse(req, res, 200, { status: 'OK' });
     } catch (error) {
-        res.status(500).json({ status: 'Failed', message: 'Internal server error' });
+        sendResponse(req, res, 500, { status: 'Failed', message: 'Internal server error' });
     }
 };

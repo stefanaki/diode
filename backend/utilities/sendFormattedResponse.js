@@ -7,7 +7,7 @@ module.exports = (req, res, status, data) => {
         if (format !== 'csv') return res.status(400).json({ message: 'Invalid format option' });
 
         let dataArray = parse(data);
-        return res.attachment('response_data.csv').send(dataArray);
+        res.attachment('response_data.csv').send(dataArray);
     } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
     }

@@ -1,5 +1,6 @@
 const pool = require('./../config/db');
 const moment = require('moment');
+const sendResponse = require('../utilities/sendFormattedResponse');
 
 module.exports = async (req, res) => {
     const { stationID, dateFrom, dateTo } = req.params;
@@ -7,11 +8,11 @@ module.exports = async (req, res) => {
     const dateTimeNow = moment().format(format);
 
     if (!moment(dateFrom, format, true).isValid() || !moment(dateFrom, format, true).isValid()) {
-        return res.status(400).json({ message: 'Bad request: Invalid date formats' });
+        return sendResponse(req, res, 400, { message: 'Bad request: Invalid date formats' });
     }
 
     if (moment(dateFrom, format, true).diff(dateTo, format, true) >= 0) {
-        return res.status(400).json({
+        return sendResponse(req, res, 400, {
             message: 'Bad request: dateFrom should be smaller than dateTo'
         });
     }
@@ -39,7 +40,9 @@ module.exports = async (req, res) => {
         const operatorQueryRes = await connection.query(operatorQuery, [stationID]);
 
         if (!operatorQueryRes[0][0]) {
-            return res.status(404).json({ message: 'Bad request: Invalid stationID' });
+            return sendResponse(req, res, 404, {
+                message: 'Bad request: Invalid stationID'
+            });
         }
 
         const operatorID = operatorQueryRes[0][0].op_name;
@@ -57,7 +60,7 @@ module.exports = async (req, res) => {
         let i = 0;
         queryResultList[0].forEach((pass) => (pass.PassIndex = ++i));
 
-        res.status(200).json({
+        sendResponse(req, res, 200, {
             Station: stationName,
             StationOperator: operatorID,
             RequestTimestamp: dateTimeNow,
@@ -69,6 +72,6 @@ module.exports = async (req, res) => {
 
         connection.release();
     } catch {
-        res.status(500).json({ message: 'Internal server error' });
+        sendResponse(req, res, 500, { message: 'Internal server error' });
     }
 };

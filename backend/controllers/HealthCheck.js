@@ -1,4 +1,5 @@
 const pool = require('./../config/db');
+const sendResponse = require('../utilities/sendFormattedResponse');
 
 module.exports = async (req, res) => {
     let { DB_NAME, DB_HOST, DB_USER, DB_PASSWORD, DB_POOL_SIZE } = process.env;
@@ -17,12 +18,12 @@ module.exports = async (req, res) => {
     try {
         const connection = await pool.getConnection();
         connection.release();
-        res.status(200).json({
+        sendResponse(req, res, 200, {
             status: 'OK',
             dbconnection: connectionString
         });
     } catch (error) {
-        res.status(500).json({
+        sendResponse(req, res, 500, {
             status: 'Failed',
             dbconnection: connectionString
         });
