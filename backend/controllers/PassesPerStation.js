@@ -3,15 +3,15 @@ const moment = require('moment');
 const sendResponse = require('../utilities/sendFormattedResponse');
 
 module.exports = async (req, res) => {
-    const { stationID, dateFrom, dateTo } = req.params;
+    const { stationID, date_from, date_to } = req.params;
     const format = 'YYYY-MM-DD HH:mm:ss';
     const dateTimeNow = moment().format(format);
 
-    if (!moment(dateFrom, format, true).isValid() || !moment(dateFrom, format, true).isValid()) {
+    if (!moment(date_from, format, true).isValid() || !moment(date_from, format, true).isValid()) {
         return sendResponse(req, res, 400, { message: 'Bad request: Invalid date formats' });
     }
 
-    if (moment(dateFrom, format, true).diff(dateTo, format, true) >= 0) {
+    if (moment(date_from, format, true).diff(date_to, format, true) >= 0) {
         return sendResponse(req, res, 400, {
             message: 'Bad request: dateFrom should be smaller than dateTo'
         });
@@ -51,8 +51,8 @@ module.exports = async (req, res) => {
         let queryResult = await connection.query(passesListQuery, [
             operatorID,
             stationID,
-            dateFrom,
-            dateTo
+            date_from,
+            date_to
         ]);
 
         // Parse result as JS object, compute total length, append PassIndex field
@@ -64,8 +64,8 @@ module.exports = async (req, res) => {
             Station: stationName,
             StationOperator: operatorID,
             RequestTimestamp: dateTimeNow,
-            PeriodFrom: dateFrom,
-            PeriodTo: dateTo,
+            PeriodFrom: date_from,
+            PeriodTo: date_to,
             NumberOfPasses: i,
             PassesList: queryResultList[0]
         });
