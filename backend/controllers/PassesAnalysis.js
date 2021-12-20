@@ -7,6 +7,9 @@ module.exports = async (req, res) => {
     const format = 'YYYY-MM-DD HH:mm:ss';
     const dateTimeNow = moment().format(format);
 
+    if(op1_ID == op2_ID) {
+        return sendResponse(req, res, 400, { message: `Bad request: The 2 Operators IDs are the same` });
+    }
     if (!moment(date_from, format, true).isValid() || !moment(date_from, format, true).isValid()) {
         return sendResponse(req, res, 400, { message: 'Bad request: Invalid date formats' });
     }
@@ -16,7 +19,11 @@ module.exports = async (req, res) => {
             message: 'Bad request: dateFrom should be smaller than dateTo'
         });
     }
-
+    // Check if the op1_ID or op2_ID exist 
+    const checkOperatorsQuery = `
+    SELECT op_name 
+    FROM operators 
+    WHERE op_name = ? or op_name = ?; `
     // Fetch Pass List query
     const passesListQuery = `
     SELECT 
@@ -38,6 +45,14 @@ module.exports = async (req, res) => {
     try {
         const connection = await pool.getConnection();
 
+        let checkOperatorsResult = await connection.query(checkOperatorsQuery,
+            [ op1_ID, op2_ID]);
+            
+        if(!checkOperatorsResult[0][0] || !checkOperatorsResult[0][1]) {
+            return sendResponse(req, res, 400, {
+                message: 'Bad request: Invalid Operator ID'
+            });
+        }
         let queryResult = await connection.query(passesListQuery, [
             op1_ID,
             op2_ID,
