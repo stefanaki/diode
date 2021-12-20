@@ -64,6 +64,7 @@ module.exports = async (req, res) => {
             RequestTimestamp: dateTimeNow,
             PeriodFrom: date_from,
             PeriodTo: date_to,
+            NumberOfPasses : i,
             PassesList: queryResultList[0]
         });
 
