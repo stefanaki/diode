@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
     
         connection.release();
        
-    } catch() {
+    } catch {
         sendResponse(req, res, 500, { message: 'Internal server error' });
     }
 };
