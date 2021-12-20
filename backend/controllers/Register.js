@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
         let encryptedPassword = await bcrypt.hash(password, 10);
         let token = jwt.sign({ username }, process.env.TOKEN_KEY, { expiresIn: '2h' });
 
-        await connection.query('INSERT INTO admins (username, password, token) VALUES (?, ?)', [
+        await connection.query('INSERT INTO admins (username, password) VALUES (?, ?)', [
             username,
             encryptedPassword
         ]);
