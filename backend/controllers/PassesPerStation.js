@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
         const operatorQueryRes = await connection.query(operatorQuery, [stationID]);
 
         if (!operatorQueryRes[0][0]) {
-            return sendResponse(req, res, 404, {
+            return sendResponse(req, res, 400, {
                 message: 'Bad request: Invalid stationID'
             });
         }
