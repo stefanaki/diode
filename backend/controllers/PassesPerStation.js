@@ -13,14 +13,12 @@ module.exports = async (req, res) => {
 
     if (moment(date_from, format, true).diff(date_to, format, true) >= 0) {
         return sendResponse(req, res, 400, {
-            message: 'Bad request: dateFrom should be smaller than dateTo'
+            message: 'Bad request: date_from should be smaller than date_to'
         });
     }
 
     // Fetch operator name query
     const operatorQuery = `SELECT st_name, op_name FROM stations WHERE st_id = ?`;
-
-    const stationNameQuery = 'SELECT st_name FROM stations WHERE st_id = ?';
 
     // Fetch Pass List query
     const passesListQuery = `
@@ -54,6 +52,12 @@ module.exports = async (req, res) => {
             date_from,
             date_to
         ]);
+
+        if (!queryResult[0][0]) {
+            return sendResponse(req, res, 402, {
+                message: 'No data for specified station and time period.'
+            });
+        }
 
         // Parse result as JS object, compute total length, append PassIndex field
         let queryResultList = JSON.parse(JSON.stringify(queryResult));
