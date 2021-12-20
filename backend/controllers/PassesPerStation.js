@@ -7,16 +7,6 @@ module.exports = async (req, res) => {
     const format = 'YYYY-MM-DD HH:mm:ss';
     const dateTimeNow = moment().format(format);
 
-    if (!moment(date_from, format, true).isValid() || !moment(date_from, format, true).isValid()) {
-        return sendResponse(req, res, 400, { message: 'Bad request: Invalid date formats' });
-    }
-
-    if (moment(date_from, format, true).diff(date_to, format, true) >= 0) {
-        return sendResponse(req, res, 400, {
-            message: 'Bad request: date_from should be smaller than date_to'
-        });
-    }
-
     // Fetch operator name query
     const operatorQuery = `SELECT st_name, op_name FROM stations WHERE st_id = ?`;
 
