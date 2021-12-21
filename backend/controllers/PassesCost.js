@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
     const dateTimeNow = moment().format(format);
 
     const query = `
-        SELECT count(pass_id) as NumberOfPasses, sum(pass_charge) as PassesCost
+        SELECT COUNT(pass_id) AS NumberOfPasses, SUM(pass_charge) AS PassesCost
         FROM passes p 
         INNER JOIN stations s
         ON p.station_id = s.st_id AND s.op_name = ?

@@ -20,21 +20,21 @@ module.exports = async (req, res) => {
     WHERE op_name = ? or op_name = ?; `;
     // Fetch Pass List query
     const passesListQuery = `
-    SELECT 
-        p.pass_id as PassID,
-        p.station_id as StationID,
-        p.pass_timestamp as TimeStamp,
-        t.vehicle_id as VehicleId,
-        p.pass_charge as Charge
-    FROM 
-        passes p
-    INNER JOIN stations s
-        ON p.station_id = s.st_id AND s.op_name = ?
-    INNER JOIN tags t
-        ON t.tag_id = p.tag_id AND tag_provider = ?
-    WHERE (pass_timestamp 
-        BETWEEN ? AND ?)
-    ORDER BY p.pass_timestamp ASC;`;
+        SELECT 
+            p.pass_id as PassID,
+            p.station_id as StationID,
+            p.pass_timestamp as TimeStamp,
+            t.vehicle_id as VehicleId,
+            p.pass_charge as Charge
+        FROM 
+            passes p
+        INNER JOIN stations s
+            ON p.station_id = s.st_id AND s.op_name = ?
+        INNER JOIN tags t
+            ON t.tag_id = p.tag_id AND tag_provider = ?
+        WHERE (pass_timestamp 
+            BETWEEN ? AND ?)
+        ORDER BY p.pass_timestamp ASC;`;
 
     try {
         const connection = await pool.getConnection();
@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
             RequestTimestamp: dateTimeNow,
             PeriodFrom: date_from,
             PeriodTo: date_to,
-            NumberOfPasses : i,
+            NumberOfPasses: i,
             PassesList: queryResultList[0]
         });
 

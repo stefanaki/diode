@@ -18,4 +18,4 @@ app.use('/interoperability/api/admin', auth, AdminRouter);
 app.use('/interoperability/api/', PassesRouter);
 app.use('*', (req, res) => res.status(404).json({ message: 'Bad request: Endpoint not found' }));
 
-app.listen(port, () => console.log(`It's alive on https://localhost:${port}`));
+app.listen(port, () => console.log(`It's alive on http://localhost:${port}`));
