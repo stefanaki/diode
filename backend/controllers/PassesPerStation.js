@@ -61,8 +61,8 @@ module.exports = async (req, res) => {
             Station: stationName,
             StationOperator: operatorID,
             RequestTimestamp: dateTimeNow,
-            PeriodFrom: date_from,
-            PeriodTo: date_to,
+            PeriodFrom: moment(date_from).format(format),
+            PeriodTo: moment(date_to).format(format),
             NumberOfPasses: i,
             PassesList: queryResultList[0]
         });

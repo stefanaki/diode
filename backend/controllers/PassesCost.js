@@ -30,8 +30,8 @@ module.exports = async (req, res) => {
             op1_ID: op1_ID,
             op2_ID: op2_ID,
             RequestTimestamp: dateTimeNow,
-            PeriodFrom: date_from,
-            PeriodTo: date_to,
+            PeriodFrom: moment(date_from).format(format),
+            PeriodTo: moment(date_to).format(format),
             NumberOfPasses: queryRes[0][0].NumberOfPasses,
             PassesCost: queryRes[0][0].PassesCost
         });

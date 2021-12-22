@@ -42,8 +42,8 @@ module.exports = async (req, res) => {
         sendResponse(req, res, 200, {
             op_ID: op_ID,
             RequestTimestamp: dateTimeNow,
-            PeriodFrom: date_from,
-            PeriodTo: date_to,
+            PeriodFrom: moment(date_from).format(format),
+            PeriodTo: moment(date_to).format(format),
             PPOList: queryRes[0]
         });
 
