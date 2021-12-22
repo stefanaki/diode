@@ -39,14 +39,12 @@ module.exports = async (req, res) => {
             });
         }
 
-        // Parse result as JS object and include PPOList
-        let queryResultList = JSON.parse(JSON.stringify(queryRes));
         sendResponse(req, res, 200, {
             op_ID: op_ID,
             RequestTimestamp: dateTimeNow,
             PeriodFrom: date_from,
             PeriodTo: date_to,
-            PPOList: queryResultList[0]
+            PPOList: queryRes[0]
         });
 
         connection.release();

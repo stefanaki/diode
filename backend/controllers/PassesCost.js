@@ -26,9 +26,6 @@ module.exports = async (req, res) => {
             });
         }
 
-     
-        // Parse result as JS object and include PPOList
-        let queryResultList = JSON.parse(JSON.stringify(queryRes));
         sendResponse(req, res, 200, {
             op1_ID: op1_ID,
             op2_ID: op2_ID,
