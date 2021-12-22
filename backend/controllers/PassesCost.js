@@ -7,6 +7,12 @@ module.exports = async (req, res) => {
     const format = 'YYYY-MM-DD HH:mm:ss';
     const dateTimeNow = moment().format(format);
 
+    if (op1_ID == op2_ID) {
+        return sendResponse(req, res, 400, {
+            message: `Bad request: The 2 Operators IDs are the same`
+        });
+    }
+
     const query = `
         SELECT COUNT(pass_id) AS NumberOfPasses, SUM(pass_charge) AS PassesCost
         FROM passes p 
@@ -22,7 +28,7 @@ module.exports = async (req, res) => {
 
         if (!queryRes[0][0]) {
             return sendResponse(req, res, 400, {
-                message: 'Bad request: Invalid op_ID'
+                message: 'Bad request: Invalid operator ID'
             });
         }
 

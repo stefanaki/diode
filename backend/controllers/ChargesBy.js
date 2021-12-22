@@ -31,11 +31,23 @@ module.exports = async (req, res) => {
 
     try {
         const connection = await pool.getConnection();
+
+        let checkOperator = await connection.query(
+            'SELECT op_name FROM operators WHERE op_name = ?',
+            [op_ID]
+        );
+
+        if (!checkOperator[0][0]) {
+            return sendResponse(req, res, 400, {
+                message: 'Bad request: Invalid Operator ID'
+            });
+        }
+
         const queryRes = await connection.query(query, [op_ID, date_from, date_to]);
 
         if (!queryRes[0][0]) {
-            return sendResponse(req, res, 400, {
-                message: 'Bad request: Invalid op_ID'
+            return sendResponse(req, res, 401, {
+                message: 'Bad request: No data for specified operator and time period'
             });
         }
 
