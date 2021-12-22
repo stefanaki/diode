@@ -52,7 +52,10 @@ module.exports = async (req, res) => {
         // Parse result as JS object, compute total length, append PassIndex field
         let queryResultList = JSON.parse(JSON.stringify(queryResult));
         let i = 0;
-        queryResultList[0].forEach((pass) => (pass.PassIndex = ++i));
+        queryResultList[0].forEach((pass) => {
+            pass.PassIndex = ++i;
+            pass.PassTimeStamp = moment(pass.PassTimeStamp).format(format);
+        });
 
         sendResponse(req, res, 200, {
             Station: stationName,

@@ -15,9 +15,10 @@ module.exports = async (req, res) => {
 
     // Check if the op1_ID or op2_ID exist
     const checkOperatorsQuery = `
-    SELECT op_name 
-    FROM operators 
-    WHERE op_name = ? or op_name = ?; `;
+        SELECT op_name 
+        FROM operators 
+        WHERE op_name = ? or op_name = ?; `;
+
     // Fetch Pass List query
     const passesListQuery = `
         SELECT 
@@ -56,7 +57,10 @@ module.exports = async (req, res) => {
         // Parse result as JS object, compute total length, append PassIndex field
         let queryResultList = JSON.parse(JSON.stringify(queryResult));
         let i = 0;
-        queryResultList[0].forEach((pass) => (pass.PassIndex = ++i));
+        queryResultList[0].forEach((pass) => {
+            pass.PassIndex = ++i;
+            pass.TimeStamp = moment(pass.TimeStamp).format(format);
+        });
 
         sendResponse(req, res, 200, {
             op1_ID: op1_ID,
