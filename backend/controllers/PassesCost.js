@@ -26,6 +26,7 @@ module.exports = async (req, res) => {
             });
         }
 
+     
         // Parse result as JS object and include PPOList
         let queryResultList = JSON.parse(JSON.stringify(queryRes));
         sendResponse(req, res, 200, {
@@ -34,8 +35,8 @@ module.exports = async (req, res) => {
             RequestTimestamp: dateTimeNow,
             PeriodFrom: date_from,
             PeriodTo: date_to,
-            NumberOfPasses: queryRes[0][0],
-            PassesCost: query[0][1]
+            NumberOfPasses: queryRes[0][0].NumberOfPasses,
+            PassesCost: queryRes[0][0].PassesCost
         });
 
         connection.release();
