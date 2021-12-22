@@ -8,4 +8,4 @@
 5. Set your environment variables in `.env` file
 6. In two seperate terminals run:
     - `redis-server`
-    - `npm start`
+    - `npm run start`
