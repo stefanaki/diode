@@ -18,8 +18,8 @@ module.exports = async (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.TOKEN_KEY);
-        req.user = decoded;
+        const payload = jwt.verify(token, process.env.TOKEN_KEY);
+        req.user = payload;
     } catch (error) {
         return sendResponse(req, res, 401, { message: 'Invalid token' });
     }
