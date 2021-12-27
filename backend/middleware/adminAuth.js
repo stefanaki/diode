@@ -25,12 +25,15 @@ module.exports = async (req, res, next) => {
             const user = await connection.query('SELECT * FROM users WHERE id = ?', [payload.id]);
 
             if (user[0][0].type !== 'admin') {
+                connection.release();
                 return sendResponse(req, res, 401, {
                     message: 'You need administrator privileges to execute this endpoint'
                 });
             }
+            connection.release();
         } catch (error) {
             console.error(error);
+            connection.release();
             return sendResponse(req, res, 500, { message: 'Internal server error' });
         }
 
