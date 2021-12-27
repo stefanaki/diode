@@ -1,15 +1,20 @@
 {
-    "name": "diode-cli",
+    "name": "se2108",
     "version": "1.0.0",
     "description": "DiodeIO CLI Application",
     "main": "index.js",
+    "preferGlobal": true,
+    "bin": "./index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "axios": "^0.24.0",
         "bcryptjs": "^2.4.3",
-        "commander": "^8.3.0"
+        "commander": "^8.3.0",
+        "moment": "^2.29.1",
+        "mysql2": "^2.3.3"
     }
 }
