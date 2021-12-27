@@ -12,16 +12,16 @@ module.exports = async (req, res) => {
         const connection = await pool.getConnection();
         await connection.query('DELETE FROM passes');
 
-        let oldUser = await connection.query('SELECT * FROM admins WHERE username = ?', [
+        let oldUser = await connection.query('SELECT * FROM users WHERE username = ?', [
             defaultUsername
         ]);
         if (!oldUser[0][0]) {
-            await connection.query('INSERT INTO admins (username, password) VALUES (?, ?)', [
-                defaultUsername,
-                encryptedPassword
-            ]);
+            await connection.query(
+                'INSERT INTO users (username, password, type) VALUES (?, ?, ?)',
+                [defaultUsername, encryptedPassword, 'admin']
+            );
         } else {
-            await connection.query('UPDATE admins SET password = ? WHERE username = ?', [
+            await connection.query('UPDATE users SET password = ? WHERE username = ?', [
                 encryptedPassword,
                 defaultUsername
             ]);
@@ -30,6 +30,7 @@ module.exports = async (req, res) => {
         connection.release();
         sendResponse(req, res, 200, { status: 'OK' });
     } catch (error) {
+        console.log(error);
         sendResponse(req, res, 500, { status: 'Failed', message: 'Internal server error' });
     }
 };
