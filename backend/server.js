@@ -5,8 +5,7 @@ const PassesRouter = require('./routes/PassesRoutes');
 const AuthRouter = require('./routes/AuthRoutes');
 const AdminRouter = require('./routes/AdminRoutes');
 
-const adminAuth = require('./middleware/adminAuth');
-const userAuth = require('./middleware/userAuth');
+const auth = require('./middleware/auth');
 
 require('dotenv').config();
 
@@ -25,8 +24,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/interoperability/api/', AuthRouter);
-app.use('/interoperability/api/admin', adminAuth, AdminRouter);
-app.use('/interoperability/api/', userAuth, PassesRouter);
+app.use('/interoperability/api/admin', auth(true), AdminRouter);
+app.use('/interoperability/api/', auth(false), PassesRouter);
 app.use('*', (req, res) => res.status(404).json({ message: 'Bad request: Endpoint not found' }));
 
 server.listen(port, () => console.log(`It's alive on https://localhost:${port}`));
