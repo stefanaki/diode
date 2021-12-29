@@ -2,22 +2,16 @@ const axios = require('axios');
 const fs = require('fs');
 const moment = require('moment');
 
-module.exports = async ({ username, passw, format }) => {
+module.exports = async ({ format }) => {
     if (!(format === 'json' || format === 'csv'))
         return console.log('Invalid response format specified');
 
     try {
-        const login = await axios({
-            url: 'https://localhost:9103/interoperability/api/login',
-            method: 'post',
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded'
-            },
-            data: new URLSearchParams({ username, password: passw }),
-            httpsAgent: new require('https').Agent({ rejectUnauthorized: false })
-        });
+        if (!fs.existsSync('.token')) return console.log('Please log in first.');
+        const token = fs.readFileSync('.token', 'utf8');
 
-        const token = login.data.token;
+        if (token.length === 0) return console.log('Please log in first.');
+
         const healthCheck = await axios({
             url: 'https://localhost:9103/interoperability/api/admin/healthcheck',
             method: 'get',
@@ -28,23 +22,14 @@ module.exports = async ({ username, passw, format }) => {
             httpsAgent: new require('https').Agent({ rejectUnauthorized: false })
         });
 
-        const logout = await axios({
-            url: 'https://localhost:9103/interoperability/api/logout',
-            method: 'post',
-            headers: {
-                'X-OBSERVATORY-AUTH': token
-            },
-            httpsAgent: new require('https').Agent({ rejectUnauthorized: false })
-        });
+        console.log(healthCheck.data);
 
-        resData = format === 'json' ? JSON.stringify(healthCheck.data, null, 4) : healthCheck.data;
+        const resData =
+            format === 'json' ? JSON.stringify(healthCheck.data, null, 4) : healthCheck.data;
 
-        fs.writeFileSync(
-            `healthcheck_${moment().format('YYYY-MM-DD_HH:mm:ss')}.${format}`,
-            resData
-        );
-
-        console.log(healthCheck.status, healthCheck.statusText);
+        const filename = `healthcheck_${moment().format('YYYY-MM-DD_HH:mm:ss')}.${format}`;
+        fs.writeFileSync(filename, resData);
+        console.log(`Created data file ${filename}`);
     } catch (error) {
         console.log('Something went wrong...');
         console.log(error.response.status, error.response.data);
