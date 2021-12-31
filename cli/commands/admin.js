@@ -80,26 +80,49 @@ module.exports = async ({ usermod, username, passw, users, passesupd, source }) 
                 console.log({
                     id: userQuery[0][0].id,
                     username: userQuery[0][0].username,
-                    accountType: userQuery[0][0].type
+                    accountType: userQuery[0][0].type,
+                    status: userQuery[0][0].status
                 });
             }
         }
 
         if (passesupd) {
-            const importQuery = `
-                LOAD DATA LOCAL INFILE
-                ?
+            await db.query({
+                sql: `LOAD DATA LOCAL INFILE ?
+                INTO TABLE vehicles
+                FIELDS TERMINATED BY ','
+                ENCLOSED BY '"'
+                LINES TERMINATED BY '\n'
+                IGNORE 1 ROWS
+                (@id, @station, @vehicle, @tag, @timestmp, @charge, @provider, @license)
+                SET vehicle_id = @vehicle, license_year = @license`,
+                values: [source],
+                infileStreamFactory: () => fs.createReadStream(source)
+            });
+
+            await db.query({
+                sql: `LOAD DATA LOCAL INFILE ?
+                INTO TABLE tags
+                FIELDS TERMINATED BY ','
+                ENCLOSED BY '"'
+                LINES TERMINATED BY '\n'
+                IGNORE 1 ROWS
+                (@id, @station, @vehicle, @tag, @timestmp, @charge, @provider, @license)
+                SET tag_id = @tag, vehicle_id = @vehicle, tag_provider = @provider`,
+                values: [source],
+                infileStreamFactory: () => fs.createReadStream(source)
+            });
+
+            await db.query({
+                sql: `LOAD DATA LOCAL INFILE ?
                 INTO TABLE passes
                 FIELDS TERMINATED BY ','
                 ENCLOSED BY '"'
                 LINES TERMINATED BY '\n'
                 IGNORE 1 ROWS
-                (pass_id, station_id, @vehicle_id, @a, pass_charge)
-                SET pass_timestamp = str_to_date(@a, '%c/%e/%Y %k:%i'),
-                tag_id = (SELECT tag_id FROM tags WHERE vehicle_id = @vehicle_id);`;
-
-            await db.query({
-                sql: importQuery,
+                (@id, @station, @vehicle, @tag, @timestmp, @charge, @provider, @license)
+                SET pass_id = @id, station_id = @station, tag_id = @tag, pass_charge = @charge,
+                pass_timestamp = str_to_date(@timestmp, '%c/%e/%Y %k:%i');`,
                 values: [source],
                 infileStreamFactory: () => fs.createReadStream(source)
             });
