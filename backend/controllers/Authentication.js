@@ -16,6 +16,8 @@ const Login = async (req, res) => {
         connection.release();
 
         if (!user[0][0]) return sendResponse(req, res, 401, { message: 'Invalid credentials' });
+        else if (user[0][0].status === 'inactive')
+            return sendResponse(req, res, 401, { message: 'Inactive user account' });
 
         if (await bcrypt.compare(password, user[0][0].password)) {
             let token = jwt.sign(
