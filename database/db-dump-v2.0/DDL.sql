@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 27, 2021 at 12:16 AM
+-- Generation Time: Dec 31, 2021 at 08:03 PM
 -- Server version: 10.6.5-MariaDB
 -- PHP Version: 8.0.13
 
@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `username` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` enum('admin','operator','transportation','bank') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
