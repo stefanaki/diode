@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
             p.pass_id as PassID,
             p.station_id as StationID,
             p.pass_timestamp as TimeStamp,
-            t.vehicle_id as VehicleId,
+            t.vehicle_id as VehicleID,
             p.pass_charge as Charge
         FROM 
             passes p
@@ -60,6 +60,7 @@ module.exports = async (req, res) => {
         queryResultList[0].forEach((pass) => {
             pass.PassIndex = ++i;
             pass.TimeStamp = moment(pass.TimeStamp).format(format);
+            pass.Charge = parseFloat(pass.Charge);
         });
 
         sendResponse(req, res, 200, {

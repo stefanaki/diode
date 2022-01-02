@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
             PeriodFrom: moment(date_from).format(format),
             PeriodTo: moment(date_to).format(format),
             NumberOfPasses: queryRes[0][0].NumberOfPasses,
-            PassesCost: queryRes[0][0].PassesCost
+            PassesCost: parseFloat(queryRes[0][0].PassesCost)
         });
 
         connection.release();

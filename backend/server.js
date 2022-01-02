@@ -20,7 +20,6 @@ const app = express();
 const port = process.env.PORT;
 const server = https.createServer(certOptions, app);
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/interoperability/api/', AuthRouter);

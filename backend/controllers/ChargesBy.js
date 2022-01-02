@@ -1,6 +1,7 @@
 const pool = require('./../config/db');
 const moment = require('moment');
 const sendResponse = require('../utilities/sendFormattedResponse');
+const { parse } = require('dotenv');
 
 module.exports = async (req, res) => {
     const { op_ID, date_from, date_to } = req.params;
@@ -51,12 +52,17 @@ module.exports = async (req, res) => {
             });
         }
 
+        let PPOList = JSON.parse(JSON.stringify(queryRes[0]));
+        PPOList.forEach((op) => {
+            op.PassesCost = parseFloat(op.PassesCost);
+        });
+
         sendResponse(req, res, 200, {
             op_ID: op_ID,
             RequestTimestamp: dateTimeNow,
             PeriodFrom: moment(date_from).format(format),
             PeriodTo: moment(date_to).format(format),
-            PPOList: queryRes[0]
+            PPOList
         });
 
         connection.release();

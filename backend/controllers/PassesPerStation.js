@@ -55,6 +55,7 @@ module.exports = async (req, res) => {
         queryResultList[0].forEach((pass) => {
             pass.PassIndex = ++i;
             pass.PassTimeStamp = moment(pass.PassTimeStamp).format(format);
+            pass.PassCharge = parseFloat(pass.PassCharge);
         });
 
         sendResponse(req, res, 200, {
