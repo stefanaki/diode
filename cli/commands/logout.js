@@ -18,9 +18,11 @@ module.exports = async () => {
         });
 
         fs.unlinkSync('.token');
-        console.log(`Log out successful.`);
+        console.log(`Log out successful`);
     } catch (error) {
-        console.log('Something went wrong...');
-        console.log(error.response.status, error.response.data);
+        if (error.response && error.response.status && error.response.data) {
+            return console.log(error.response.status, error.response.data);
+        }
+        console.log('Could not hit API');
     }
 };

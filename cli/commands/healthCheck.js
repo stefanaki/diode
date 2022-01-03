@@ -17,9 +17,13 @@ module.exports = async () => {
             httpsAgent: new require('https').Agent({ rejectUnauthorized: false })
         });
 
-        console.log(healthCheck.data);
+        console.log(
+            `Connection status: ${healthCheck.data.status}\nConnection string: ${healthCheck.data.dbconnection}`
+        );
     } catch (error) {
-        console.log('Something went wrong...');
-        console.log(error.response.status, error.response.data);
+        if (error.response && error.response.status && error.response.data) {
+            return console.log(error.response.status, error.response.data);
+        }
+        console.log('Could not hit API');
     }
 };

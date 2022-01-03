@@ -17,10 +17,11 @@ module.exports = async () => {
             httpsAgent: new require('https').Agent({ rejectUnauthorized: false })
         });
 
-        console.log(resetStations.data);
+        console.log(resetStations.data.status);
     } catch (error) {
-        console.log('Something went wrong...');
-        console.log(error.response.status, error.response.data);
+        if (error.response && error.response.status && error.response.data) {
+            console.log(error.response.status, error.response.data);
+        }
         console.log('Make sure you have deleted all pass events from the database');
     }
 };

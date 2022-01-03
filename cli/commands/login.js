@@ -18,7 +18,9 @@ module.exports = async ({ username, passw }) => {
         fs.writeFileSync('.token', token);
         console.log(`Welcome, ${username}. Type se2108 --help to display available commands.`);
     } catch (error) {
-        console.log('Something went wrong...');
-        console.log(error.response.status, error.response.data);
+        if (error.response && error.response.status && error.response.data) {
+            return console.log(error.response.status, error.response.data);
+        }
+        console.log('Could not hit API');
     }
 };
