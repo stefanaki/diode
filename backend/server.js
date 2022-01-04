@@ -23,8 +23,8 @@ const server = https.createServer(certOptions, app);
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/interoperability/api/', AuthRouter);
-app.use('/interoperability/api/admin', auth(true), AdminRouter);
-app.use('/interoperability/api/', auth(false), PassesRouter);
+app.use('/interoperability/api/admin', auth('admin'), AdminRouter);
+app.use('/interoperability/api/', auth('user'), PassesRouter);
 app.use('*', (req, res) => res.status(404).json({ message: 'Bad request: Endpoint not found' }));
 
 server.listen(port, () => console.log(`It's alive on https://localhost:${port}`));
