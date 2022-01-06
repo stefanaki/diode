@@ -25,7 +25,8 @@ module.exports = async (req, res) => {
     } catch (error) {
         sendResponse(req, res, 500, {
             status: 'Failed',
-            dbconnection: connectionString
+            dbconnection: connectionString,
+            error: error.message
         });
     }
 };
