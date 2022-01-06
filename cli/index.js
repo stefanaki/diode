@@ -36,8 +36,8 @@ program
     .command('passesperstation')
     .description('All the pass events at the specified toll station and time period')
     .requiredOption('--station <stationID>', 'Station ID')
-    .requiredOption('--datefrom <dateFrom>', 'Start of specified period')
-    .requiredOption('--dateto <dateTo>', 'End of specified period')
+    .requiredOption('--datefrom <date>', 'Start of specified period')
+    .requiredOption('--dateto <date>', 'End of specified period')
     .requiredOption('--format <format>', 'Response format type {json|csv}', 'json')
     .action(require('./commands/passesPerStation'));
 
@@ -46,8 +46,8 @@ program
     .description('All the pass events by vehicles with tags of op2 at stations of op1')
     .requiredOption('--op1 <operatorID>', 'Operator ID 1')
     .requiredOption('--op2 <operatorID>', 'Operator ID 2')
-    .requiredOption('--datefrom <dateFrom>', 'Start of specified period')
-    .requiredOption('--dateto <dateTo>', 'End of specified period')
+    .requiredOption('--datefrom <date>', 'Start of specified period')
+    .requiredOption('--dateto <date>', 'End of specified period')
     .requiredOption('--format <format>', 'Response format type {json|csv}', 'json')
     .action(require('./commands/passesAnalysis'));
 
@@ -56,8 +56,8 @@ program
     .description('Summary of the pass events of vehicles with tags of op2 at toll stations of op1')
     .requiredOption('--op1 <operatorID>', 'Operator ID 1')
     .requiredOption('--op2 <operatorID>', 'Operator ID 2')
-    .requiredOption('--datefrom <dateFrom>', 'Start of specified period')
-    .requiredOption('--dateto <dateTo>', 'End of specified period')
+    .requiredOption('--datefrom <date>', 'Start of specified period')
+    .requiredOption('--dateto <date>', 'End of specified period')
     .requiredOption('--format <format>', 'Response format type {json|csv}', 'json')
     .action(require('./commands/passesCost'));
 
@@ -65,20 +65,33 @@ program
     .command('chargesby')
     .description('Debts of op1 to every other operator in the specified time period')
     .requiredOption('--op1 <operatorID>', 'Operator ID 1')
-    .requiredOption('--datefrom <dateFrom>', 'Start of specified period')
-    .requiredOption('--dateto <dateTo>', 'End of specified period')
+    .requiredOption('--datefrom <date>', 'Start of specified period')
+    .requiredOption('--dateto <date>', 'End of specified period')
     .requiredOption('--format <format>', 'Response format type {json|csv}', 'json')
     .action(require('./commands/chargesBy'));
+
+program
+    .command('settlements')
+    .description('Settlement management operations')
+    .option('--verify', "Mark a settlement's transaction status as completed")
+    .option('--settlid <settlementID>', 'Settlement ID')
+    .option('--list', 'List settlements between two operators in specified time period')
+    .option('--create', 'Generate a new settlement between two operators in specified time period')
+    .option('--op1 <operatorID>', 'Operator ID 1')
+    .option('--op2 <operatorID>', 'Operator ID 2')
+    .option('--datefrom <date>', 'Start of specified period')
+    .option('--dateto <date>', 'End of specified period')
+    .action(require('./commands/settlements'));
 
 program
     .command('admin')
     .description('System administration operations')
     .option('--usermod', 'Modify or create new user')
-    .option('--username <username>', 'Username')
-    .option('--passw <password>', 'Password')
+    .option('--username <username>', 'User to be created or modified')
+    .option('--passw <password>', 'Password of specified user')
     .option('--users <username>', 'User status')
     .option('--passesupd', 'Import new pass events from CSV file')
-    .option('--source <filename>', 'Source CSV file')
+    .option('--source <filePath>', 'Source CSV file')
     .action(async (options) => {
         await require('./commands/admin')(options);
         process.exit();
