@@ -33,6 +33,22 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
 
             console.log(`Settlement with ID ${settlid} has been marked as completed successfully`);
         }
+
+
+        if (create) {
+            const createSettlement = await axios({
+                url: 'https://localhost:9103/interoperability/api/settlements/CreateSettlement',
+                method: 'post',
+                headers: {
+                    'X-OBSERVATORY-AUTH': token
+                },
+                data: new URLSearchParams({ op1_ID: op1, op2_ID: op2, date_from: datefrom, date_to: dateto }),
+                httpsAgent: new require('https').Agent({ rejectUnauthorized: false })
+            });
+
+            console.log(`Settlement has been created successfully`);
+        }
+
     } catch (error) {
         if (error.response && error.response.status && error.response.data) {
             return console.log(error.response.status, error.response.data);
