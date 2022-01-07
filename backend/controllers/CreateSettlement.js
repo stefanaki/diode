@@ -1,15 +1,17 @@
+const moment = require('moment');
 const pool = require('./../config/db');
 const sendResponse = require('../utilities/sendFormattedResponse');
 
 module.exports = async (req, res) => {
     const { op1_ID, op2_ID, date_from, date_to } = req.body;
-    
+    const format = 'YYYY-MM-DD HH:mm:ss';
+
     if (op1_ID == op2_ID) {
         return sendResponse(req, res, 400, {
             message: `Bad request: The 2 Operators IDs are the same`
         });
     }
-    
+
     const checkQuery = `
         SELECT operator_credited, operator_debited, date_from, date_to 
         FROM settlements 
@@ -38,29 +40,57 @@ module.exports = async (req, res) => {
     try {
         const connection = await pool.getConnection();
 
-        let check = await connection.query(checkQuery, [op1_ID,op2_ID,op2_ID,op1_ID,date_from,date_to,date_from,date_from]);
+        let check = await connection.query(checkQuery, [
+            op1_ID,
+            op2_ID,
+            op2_ID,
+            op1_ID,
+            date_from,
+            date_to,
+            date_from,
+            date_from
+        ]);
 
         if (check[0][0]) {
             return sendResponse(req, res, 400, {
                 message: 'Bad request: The settlement overlaps with existing settlement'
             });
         }
-        
 
         let q1 = await connection.query(computequery, [op1_ID, op2_ID, date_from, date_to]); // how much money does op2 owes to op1
         let q2 = await connection.query(computequery, [op2_ID, op1_ID, date_from, date_to]); // how much money does op1 owes to op2
-        
+
         let amount = Math.abs(q2[0][0].PassesCost - q1[0][0].PassesCost);
         let status = 0;
-        
-       
-        if(q1[0][0].PassesCost < q2[0][0].PassesCost) { // op1 is debited and op2 is credited
-            await connection.query(insertquery,[op2_ID,op1_ID,date_from,date_to,amount,status]);    
-        } 
-        if (q1[0][0].PassesCost > q2[0][0].PassesCost) { // op2 is debited and op1 is credited
-            await connection.query(insertquery,[op1_ID,op2_ID,date_from,date_to,amount,status]);
+
+        let credited, debited;
+        if (q1[0][0].PassesCost < q2[0][0].PassesCost) {
+            // op1 is debited and op2 is credited
+            credited = op2_ID;
+            debited = op1_ID;
+            await connection.query(insertquery, [
+                op2_ID,
+                op1_ID,
+                date_from,
+                date_to,
+                amount,
+                status
+            ]);
         }
-        if (q1[0][0].PassesCost == q2[0][0].PassesCost){
+        if (q1[0][0].PassesCost > q2[0][0].PassesCost) {
+            // op2 is debited and op1 is credited
+            credited = op1_ID;
+            debited = op2_ID;
+            await connection.query(insertquery, [
+                op1_ID,
+                op2_ID,
+                date_from,
+                date_to,
+                amount,
+                status
+            ]);
+        }
+        if (q1[0][0].PassesCost == q2[0][0].PassesCost) {
             return sendResponse(req, res, 200, {
                 message: 'The settlement amount is zero'
             });
@@ -68,7 +98,12 @@ module.exports = async (req, res) => {
 
         connection.release();
         sendResponse(req, res, 200, {
-            message: 'Settlement has been created successfully!'
+            message: 'Settlement has been created successfully',
+            periodFrom: `${moment(date_from, 'YYYYMMDD').format(format)}`,
+            periodTo: `${moment(date_to, 'YYYYMMDD').format(format)}`,
+            settlement: `Operator ${debited} owes to operator ${credited} the amount of ${amount.toFixed(
+                2
+            )}`
         });
     } catch (error) {
         console.log(error);
