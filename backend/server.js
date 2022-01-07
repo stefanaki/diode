@@ -1,6 +1,7 @@
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
+const cors = require('cors');
 const PassRouter = require('./routes/PassRoutes');
 const AuthRouter = require('./routes/AuthRoutes');
 const AdminRouter = require('./routes/AdminRoutes');
@@ -20,6 +21,8 @@ const certOptions = {
 const app = express();
 const port = process.env.PORT;
 const server = https.createServer(certOptions, app);
+
+app.use(cors());
 
 app.use(express.urlencoded({ extended: true }));
 
