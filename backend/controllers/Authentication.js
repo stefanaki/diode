@@ -27,7 +27,7 @@ const Login = async (req, res) => {
             );
             return sendResponse(req, res, 200, { message: 'Log in successful', token });
         } else {
-            return sendResponse(req, res, 400, { message: 'Invalid credentials' });
+            return sendResponse(req, res, 401, { message: 'Invalid credentials' });
         }
     } catch (error) {
         return sendResponse(req, res, 500, { message: 'Internal server error' });
