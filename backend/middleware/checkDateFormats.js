@@ -2,7 +2,8 @@ const moment = require('moment');
 const sendResponse = require('../utilities/sendFormattedResponse');
 
 module.exports = (req, res, next) => {
-    const { date_from, date_to } = req.params;
+    const { date_from, date_to } =
+        req.params.date_from && req.params.date_to ? req.params : req.body;
     const format = 'YYYYMMDD';
 
     if (!moment(date_from, format, true).isValid() || !moment(date_to, format, true).isValid()) {
