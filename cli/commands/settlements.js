@@ -54,7 +54,9 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
             console.log(
                 `Time period: ${createSettlement.data.periodFrom} - ${createSettlement.data.periodTo}`
             );
-            console.log(createSettlement.data.settlement);
+            console.log(`Operator credited: ${createSettlement.data.operatorCredited}`);
+            console.log(`Operator debited: ${createSettlement.data.operatorDebited}`);
+            console.log(`Amount: ${createSettlement.data.amount.toFixed(2)}`);
         }
     } catch (error) {
         if (error.response && error.response.status && error.response.data) {

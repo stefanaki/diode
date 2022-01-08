@@ -101,9 +101,9 @@ module.exports = async (req, res) => {
             message: 'Settlement has been created successfully',
             periodFrom: `${moment(date_from, 'YYYYMMDD').format(format)}`,
             periodTo: `${moment(date_to, 'YYYYMMDD').format(format)}`,
-            settlement: `Operator ${debited} owes to operator ${credited} the amount of ${amount.toFixed(
-                2
-            )}`
+            operatorCredited: credited,
+            operatorDebited: debited,
+            amount
         });
     } catch (error) {
         console.log(error);
