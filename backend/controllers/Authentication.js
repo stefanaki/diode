@@ -25,7 +25,11 @@ const Login = async (req, res) => {
                 process.env.TOKEN_KEY,
                 { expiresIn: '2h' }
             );
-            return sendResponse(req, res, 200, { message: 'Log in successful', token });
+            return sendResponse(req, res, 200, {
+                message: 'Log in successful',
+                userType: user[0][0].type,
+                token
+            });
         } else {
             return sendResponse(req, res, 401, { message: 'Invalid credentials' });
         }
