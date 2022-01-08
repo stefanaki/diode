@@ -1,7 +1,6 @@
 const pool = require('./../config/db');
 const moment = require('moment');
 const sendResponse = require('../utilities/sendFormattedResponse');
-const { parse } = require('dotenv');
 
 module.exports = async (req, res) => {
     const { op_ID, date_from, date_to } = req.params;
