@@ -1,10 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-    <%- include('./partials/head'); %>
-    <script src="/js/redirect.js"></script>
-    <body>
-        <div class="content">
-            
-        <%- include('./partials/footer') %>
-    </body>
+	<%- include('./partials/head'); %>
+	<script src="/js/redirect.js"></script>
+	<script defer src="/js/operator.js"></script>
+	<script defer src="/js/logout.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<body>
+		<div id="alerts" class="d-none"></div>
+		<%- include('./partials/navbar'); %>
+
+		<div class="container">
+			<ul class="nav nav-tabs d-flex justify-content-center" id="myTab" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button
+						class="nav-link active"
+						id="home-tab"
+						data-bs-toggle="tab"
+						data-bs-target="#home"
+						type="button"
+						role="tab"
+					>
+						Pass Events
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button
+						class="nav-link"
+						id="profile-tab"
+						data-bs-toggle="tab"
+						data-bs-target="#profile"
+						type="button"
+						role="tab"
+					>
+						Data Comparison
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button
+						class="nav-link"
+						id="contact-tab"
+						data-bs-toggle="tab"
+						data-bs-target="#contact"
+						type="button"
+						role="tab"
+					>
+						Total Charges
+					</button>
+				</li>
+			</ul>
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade show active" id="home" role="tabpanel">
+					.
+					<div style="width: 75%">
+						<canvas id="chart1"></canvas>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="profile" role="tabpanel">
+					<canvas id="chart2"></canvas>
+				</div>
+				<div class="tab-pane fade" id="contact" role="tabpanel">
+					<canvas id="area-3"></canvas>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
