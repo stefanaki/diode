@@ -6,6 +6,7 @@ const PassRouter = require('./routes/PassRoutes');
 const AuthRouter = require('./routes/AuthRoutes');
 const AdminRouter = require('./routes/AdminRoutes');
 const SettlementRouter = require('./routes/SettlementRoutes');
+const AuxiliaryRouter = require('./routes/AuxiliaryRoutes');
 
 const auth = require('./middleware/auth');
 
@@ -27,6 +28,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/interoperability/api/', AuthRouter);
+app.use('/interoperability/api/auxiliary', auth('user'), AuxiliaryRouter);
 app.use('/interoperability/api/settlements', auth('user'), SettlementRouter);
 app.use('/interoperability/api/admin', auth('admin'), AdminRouter);
 app.use('/interoperability/api/', auth('user'), PassRouter);
