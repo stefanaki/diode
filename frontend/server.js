@@ -9,8 +9,8 @@ app.use(express.static('public'));
 
 app.get('/login', (req, res) => res.render('login', { title: 'Log in' }));
 
-app.get('/', (req, res) => res.render('dashboard', { title: 'Dashboard' }));
+app.get('/', (req, res) => res.render('operator', { title: 'Operator Analytics', active: 1 }));
 
 app.listen(port, () =>
-    console.log(`Front-end server started running on http://localhost:${port}/`)
+	console.log(`Front-end server started running on http://localhost:${port}/`)
 );
