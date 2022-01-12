@@ -1,38 +1,10 @@
 let token = localStorage.getItem('auth_token');
 
-const createAlert = (msg, type) => {
-	let alert = document.createElement('div');
-	alerts.classList.remove('d-none');
-	alert.classList.add(
-		'my-alert',
-		'alert',
-		'alert-dismissible',
-		`alert-${type}`,
-		'hide',
-		'fade',
-		'in',
-		'mt-3'
-	);
-	alert.innerHTML = `
-            ${msg}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-	alerts.appendChild(alert);
-
-	setTimeout(() => {
-		alert.classList.remove('hide');
-		alert.classList.add('show');
-		setTimeout(() => {
-			alert.classList.remove('show');
-			alert.classList.add('hide');
-		}, 3000);
-		setTimeout(() => {
-			alert.remove();
-			alerts.classList.add('d-none');
-		}, 3600);
-	}, 0);
-};
-
 const loadData = async (current, datefrom, dateto) => {
+	let spinner = document.createElement('div');
+	spinner.classList.add('d-flex', 'justify-content-center');
+	spinner.innerHTML = `<div class="spinner-border"></div>`;
+	document.querySelector('.container').appendChild(spinner);
 	try {
 		let operators = await axios({
 			url: `https://localhost:9103/interoperability/api/auxiliary/getoperators`,
@@ -197,6 +169,7 @@ const loadData = async (current, datefrom, dateto) => {
 				}
 			}
 		});
+		spinner.remove();
 	} catch (error) {
 		if (error.response) {
 			if (error.response.data.message === 'Invalid token') {
@@ -208,11 +181,9 @@ const loadData = async (current, datefrom, dateto) => {
 				window.location.replace('http://localhost:8000/login');
 			}
 		} else {
-			createAlert(
-				JSON.stringify({ msg: 'Network error, try logging in again', type: 'danger' })
-			);
+			createAlert('Network error, try logging in again', 'danger');
 		}
 	}
 };
 
-loadData('gefyra', '20201010', '20211010');
+loadData('egnatia', '20201010', '20211010');

@@ -8,34 +8,6 @@ if (localStorage.getItem('auth_token')) {
 	window.location.replace('/');
 }
 
-const createAlert = (msg, type) => {
-	let alert = document.createElement('div');
-	alert.classList.add(
-		'my-alert',
-		'alert',
-		'alert-dismissible',
-		`alert-${type}`,
-		'hide',
-		'fade',
-		'in',
-		'mt-3'
-	);
-	alert.innerHTML = `
-            ${msg}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-	alerts.appendChild(alert);
-
-	setTimeout(() => {
-		alert.classList.remove('hide');
-		alert.classList.add('show');
-		setTimeout(() => {
-			alert.classList.remove('show');
-			alert.classList.add('hide');
-		}, 3000);
-		setTimeout(() => alert.remove(), 3600);
-	}, 0);
-};
-
 if (msg) {
 	msgObj = JSON.parse(msg);
 	createAlert(msgObj.msg, msgObj.type);

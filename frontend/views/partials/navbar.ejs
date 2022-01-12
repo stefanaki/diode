@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark" style="width: 100%">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark" style="width: 100%">
 	<div class="container-fluid">
 		<a class="navbar-brand px-3" href="/">Diode <span class="text-muted"> IO</span></a>
 		<button
@@ -13,16 +13,22 @@
 		<div class="collapse navbar-collapse" id="navbarColor03">
 			<ul class="navbar-nav me-auto d-flex justify-content-center">
 				<li class="nav-item">
-					<a class="nav-link active" href="/">Operator Analytics</a>
+					<a class="nav-link <% if(active === 1){ %> active <% } %>" href="/"
+						>Operator Analytics</a
+					>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">Settlements</a>
+					<a class="nav-link <% if(active === 2){ %> active <% } %>" href="#"
+						>Settlements</a
+					>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">Transportation Authorities</a>
+					<a class="nav-link <% if(active === 3){ %> active <% } %>" href="#"
+						>Transportation Authorities</a
+					>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">About</a>
+					<a class="nav-link <% if(active === 4){ %> active <% } %>" href="#">About</a>
 				</li>
 			</ul>
 			<button class="btn btn-primary" id="logoutBtn">Log out</button>
