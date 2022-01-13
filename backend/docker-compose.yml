@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+    backend:
+        container_name: nodecontainer
+        build: .
+        image: backend:v1
+        ports:
+            - 9103:9103
+        expose:
+            - 9103
+        environment:
+            DB_HOST: db
+            DB_PORT: '3306'
+            DB_USER: 'root'
+            DB_PASSWORD: 'rootroot123'
+            DB_NAME: 'diode_io'
+            DB_CONNECTION_LIMIT: 10
+            REDIS_HOST: redis
+        depends_on:
+            - db
+            - redis
+        networks:
+            - internal
+
+    db:
+        container_name: mysqlcontainer
+        image: mariadb:latest
+        command: --default-authentication-plugin=mysql_native_password
+        restart: unless-stopped
+        volumes:
+            - $HOME/database:/var/lib/mysql:rw
+            - ../database/db-dump-v2.0/complete_dump_31-12-2021_.sql:/docker-entrypoint-initdb.d/0_init.sql:ro
+        ports:
+            - 3307:3306
+        expose:
+            - 3306
+        environment:
+            MYSQL_DATABASE: diode_io
+            MYSQL_USER: root
+            MYSQL_ROOT_PASSWORD: rootroot123
+        networks:
+            - internal
+
+    redis:
+        container_name: rediscontainer
+        image: redis:6.2.6
+        restart: unless-stopped
+        ports:
+            - '63790:6379'
+        networks:
+            - internal
+
+networks:
+    internal:

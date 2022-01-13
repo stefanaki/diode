@@ -13,10 +13,10 @@ const auth = require('./middleware/auth');
 require('dotenv').config();
 
 const certOptions = {
-    key: fs.readFileSync('./certificate/key.pem'),
-    cert: fs.readFileSync('./certificate/cert.pem'),
-    requestCert: false,
-    rejectUnauthorized: false
+	key: fs.readFileSync('./certificate/key.pem'),
+	cert: fs.readFileSync('./certificate/cert.pem'),
+	requestCert: false,
+	rejectUnauthorized: false
 };
 
 const app = express();
@@ -28,10 +28,10 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/interoperability/api/', AuthRouter);
+app.use('/interoperability/api/', auth('user'), PassRouter);
 app.use('/interoperability/api/auxiliary', auth('user'), AuxiliaryRouter);
 app.use('/interoperability/api/settlements', auth('user'), SettlementRouter);
 app.use('/interoperability/api/admin', auth('admin'), AdminRouter);
-app.use('/interoperability/api/', auth('user'), PassRouter);
 app.use('*', (req, res) => res.status(404).json({ message: 'Bad request: Endpoint not found' }));
 
 server.listen(port, () => console.log(`It's alive on https://localhost:${port}`));
