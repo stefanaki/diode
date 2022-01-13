@@ -2,10 +2,12 @@ const pool = require('./../config/db');
 const sendResponse = require('../utilities/sendFormattedResponse');
 
 module.exports = async (req, res) => {
-	let { DB_NAME, DB_HOST, DB_USER, DB_PASSWORD, DB_POOL_SIZE } = process.env;
+	let { DB_NAME, DB_HOST, DB_USER, DB_PASSWORD, DB_CONNECTION_LIMIT, DB_PORT } = process.env;
 	let connectionString =
 		'mysql;host=' +
 		DB_HOST +
+		';port=' +
+		DB_PORT +
 		';db_name=' +
 		DB_NAME +
 		';user=' +
@@ -13,7 +15,7 @@ module.exports = async (req, res) => {
 		';password=' +
 		DB_PASSWORD +
 		';connection_limit=' +
-		DB_POOL_SIZE;
+		DB_CONNECTION_LIMIT;
 
 	try {
 		const connection = await pool.getConnection();
