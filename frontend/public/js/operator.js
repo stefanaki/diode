@@ -1,4 +1,64 @@
 let token = localStorage.getItem('auth_token');
+let list = document.querySelector('#operators');
+
+let c1,
+	c2,
+	c3 = null;
+
+list.addEventListener('change', (e) => {
+	let opName = e.target.value;
+	console.log(opName);
+});
+
+const now = new Date();
+const picker = new Litepicker({
+	element: document.querySelector('#litepicker'),
+	numberOfColumns: 2,
+	numberOfMonths: 2,
+	singleMode: false,
+	inlineMode: true,
+	setup: function (picker) {
+		picker.on('selected', function (date1, date2) {
+			console.log(date1.format('YYYYMMDD') + ' - ' + date2.format('YYYYMMDD'));
+			if (document.querySelector('#operators').value !== 'Select operator')
+				loadData(
+					document.querySelector('#operators').value,
+					date1.format('YYYYMMDD'),
+					date2.format('YYYYMMDD')
+				);
+		});
+	}
+});
+
+let operators = [];
+
+(async () => {
+	try {
+		operators = await axios({
+			url: `https://localhost:9103/interoperability/api/auxiliary/getoperators`,
+			method: 'get',
+			headers: {
+				'X-OBSERVATORY-AUTH': token
+			}
+		});
+
+		operators = operators.data.operators;
+		console.log(operators);
+
+		operators.forEach((op) => {
+			let selection = document.createElement('option');
+			selection.value = op.op_name;
+			selection.innerHTML = `${op.op_name
+				.replace(/_/g, ' ')
+				.replace(/(?: |\b)(\w)/g, function (key) {
+					return key.toUpperCase();
+				})} (${op.op_abbr})`;
+			list.appendChild(selection);
+		});
+	} catch (error) {
+		console.log(error);
+	}
+})();
 
 const loadData = async (current, datefrom, dateto) => {
 	let spinner = document.createElement('div');
@@ -6,13 +66,6 @@ const loadData = async (current, datefrom, dateto) => {
 	spinner.innerHTML = `<div class="spinner-border"></div>`;
 	document.querySelector('.container').appendChild(spinner);
 	try {
-		let operators = await axios({
-			url: `https://localhost:9103/interoperability/api/auxiliary/getoperators`,
-			method: 'get',
-			headers: {
-				'X-OBSERVATORY-AUTH': token
-			}
-		});
 		let stations = await axios({
 			url: `https://localhost:9103/interoperability/api/auxiliary/getstations/${current}`,
 			method: 'get',
@@ -28,7 +81,6 @@ const loadData = async (current, datefrom, dateto) => {
 			}
 		});
 
-		operators = operators.data.operators;
 		stations = stations.data.stations;
 		stationNames = [];
 		stations.forEach((st) => {
@@ -60,7 +112,10 @@ const loadData = async (current, datefrom, dateto) => {
 		chargesBy = chargesBy.data;
 		let labels = operators.map((op) => op.op_abbr);
 
-		new Chart(document.getElementById('chart1'), {
+		if (c1) c1.destroy();
+		if (c2) c2.destroy();
+		if (c3) c3.destroy();
+		c1 = new Chart(document.getElementById('chart1'), {
 			type: 'bar',
 			data: {
 				labels: labels,
@@ -90,7 +145,7 @@ const loadData = async (current, datefrom, dateto) => {
 				}
 			}
 		});
-		new Chart(document.getElementById('chart2'), {
+		c2 = new Chart(document.getElementById('chart2'), {
 			type: 'pie',
 			data: {
 				labels: labels,
@@ -129,7 +184,8 @@ const loadData = async (current, datefrom, dateto) => {
 				}
 			}
 		});
-		new Chart(document.getElementById('area-3'), {
+
+		c3 = new Chart(document.getElementById('area-3'), {
 			type: 'bar',
 			data: {
 				labels: stationNames,
@@ -169,9 +225,12 @@ const loadData = async (current, datefrom, dateto) => {
 				}
 			}
 		});
-		spinner.remove();
 	} catch (error) {
 		if (error.response) {
+			if (error.response.status === 402)
+				createAlert('No data for specified time period', 'info');
+			else createAlert(error.response.data.message, 'danger');
+
 			if (error.response.data.message === 'Invalid token') {
 				localStorage.setItem(
 					'msg',
@@ -183,7 +242,7 @@ const loadData = async (current, datefrom, dateto) => {
 		} else {
 			createAlert('Network error, try logging in again', 'danger');
 		}
+	} finally {
+		spinner.remove();
 	}
 };
-
-loadData('egnatia', '20201010', '20211010');
