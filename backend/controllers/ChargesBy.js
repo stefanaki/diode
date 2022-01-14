@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
 			const queryRes = await connection.query(query, [op_ID, date_from, date_to]);
 
 			if (!queryRes[0][0]) {
-				return sendResponse(req, res, 401, {
+				return sendResponse(req, res, 402, {
 					message: 'Bad request: No data for specified operator and time period'
 				});
 			}
