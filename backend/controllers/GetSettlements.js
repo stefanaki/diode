@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
             let resultlist = JSON.parse(JSON.stringify(QueryRes[0]))
 			resultlist.forEach((settlement) => {
 				totalsettlements++;
-                completed += settlement.status == 1 ? 1 : 0; 
+                completed += settlement.Status == 1 ? 1 : 0; 
                 settlement.DateFrom= moment(settlement.DateFrom).format(format);
                 settlement.DateTo= moment(settlement.DateTo).format(format);
                 settlement.Amount = parseFloat(settlement.Amount);
