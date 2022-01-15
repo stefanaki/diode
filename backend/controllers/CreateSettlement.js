@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
         WHERE (
          ( (operator_credited = ? AND operator_debited = ?) OR (operator_credited = ? AND operator_debited = ? ) ) 
          AND 
-         ( (date_from >= ? AND date_from <= ? ) OR (date_to >= ? AND date_from <= ?) )   
+         ( (date_from > ? AND date_from < ? ) OR (date_to > ? AND date_from < ?) )   
         )`;
 
 	// Compute the amount of the settlement and who is credited and who is debited
