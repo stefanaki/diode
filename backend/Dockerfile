@@ -10,7 +10,7 @@ COPY . .
 
 EXPOSE 9103
 
-VOLUME [ "/api/node_modules" ]
+VOLUME [ "/backend/node_modules" ]
 
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "dev" ]
 

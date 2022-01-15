@@ -10,7 +10,7 @@ COPY . .
 
 EXPOSE 8000
 
-VOLUME [ "/api/node_modules" ]
+VOLUME [ "/frontend/node_modules" ]
 
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "dev" ]
 

@@ -17,6 +17,8 @@ services:
             DB_NAME: 'diode_io'
             DB_CONNECTION_LIMIT: 10
             REDIS_HOST: redis
+        volumes:
+            - ./backend:/backend
         depends_on:
             - db
             - redis
@@ -53,3 +55,5 @@ services:
             - 8000:8000
         expose:
             - 8000
+        volumes:
+            - ./frontend:/frontend
