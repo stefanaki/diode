@@ -13,8 +13,8 @@ list.addEventListener('change', (e) => {
 const now = new Date();
 const picker = new Litepicker({
 	element: document.querySelector('#litepicker'),
-	numberOfColumns: 2,
-	numberOfMonths: 2,
+	numberOfColumns: 4,
+	numberOfMonths: 4,
 	singleMode: false,
 	inlineMode: true,
 	setup: function (picker) {
