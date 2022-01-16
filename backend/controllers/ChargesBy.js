@@ -43,18 +43,35 @@ module.exports = async (req, res) => {
 				});
 			}
 
-			const queryRes = await connection.query(query, [op_ID, date_from, date_to]);
+			let operators = await connection.query('SELECT * FROM operators WHERE op_name != ?', [
+				op_ID
+			]);
+			let opNames = operators[0].map((op) => op.op_name);
 
-			if (!queryRes[0][0]) {
-				return sendResponse(req, res, 402, {
-					message: 'Bad request: No data for specified operator and time period'
-				});
-			}
+			const queryRes = await connection.query(query, [op_ID, date_from, date_to]);
 
 			let PPOList = JSON.parse(JSON.stringify(queryRes[0]));
 			PPOList.forEach((op) => {
 				op.PassesCost = parseFloat(op.PassesCost);
 			});
+
+			for (op in opNames) {
+				let found = false;
+				for (ppo in PPOList) {
+					if (PPOList[ppo].VisitingOperator === opNames[op]) {
+						found = true;
+					}
+				}
+				if (!found) {
+					PPOList.push({
+						VisitingOperator: opNames[op],
+						NumberOfPasses: 0,
+						PassesCost: 0
+					});
+				}
+			}
+
+			PPOList.sort((a, b) => (a.VisitingOperator > b.VisitingOperator ? 1 : -1));
 
 			sendResponse(req, res, 200, {
 				op_ID: op_ID,
