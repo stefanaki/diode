@@ -1,16 +1,12 @@
 let token = localStorage.getItem('auth_token');
 let list = document.querySelector('#operators');
 
-let c1,
+let chargesGraph,
 	c2,
-	c3 = null;
+	c3,
+	totalGraph,
+	totalPie = null;
 
-list.addEventListener('change', (e) => {
-	let opName = e.target.value;
-	console.log(opName);
-});
-
-const now = new Date();
 const picker = new Litepicker({
 	element: document.querySelector('#litepicker'),
 	numberOfColumns: 4,
@@ -30,11 +26,20 @@ const picker = new Litepicker({
 	}
 });
 
-let operators = [];
+document.querySelector('#operators').addEventListener('change', () => {
+	if (picker.getDate() && document.querySelector('#operators').value !== 'Select operator') {
+		loadData(
+			document.querySelector('#operators').value,
+			picker.getStartDate().format('YYYYMMDD'),
+			picker.getEndDate().format('YYYYMMDD')
+		);
+	}
+});
 
+let allOperators = [];
 (async () => {
 	try {
-		operators = await axios({
+		allOperators = await axios({
 			url: `https://localhost:9103/interoperability/api/auxiliary/getoperators`,
 			method: 'get',
 			headers: {
@@ -42,10 +47,10 @@ let operators = [];
 			}
 		});
 
-		operators = operators.data.operators;
-		console.log(operators);
+		allOperators = allOperators.data.operators;
+		console.log(allOperators);
 
-		operators.forEach((op) => {
+		allOperators.forEach((op) => {
 			let selection = document.createElement('option');
 			selection.value = op.op_name;
 			selection.innerHTML = `${op.op_name
@@ -61,10 +66,6 @@ let operators = [];
 })();
 
 const loadData = async (current, datefrom, dateto) => {
-	let spinner = document.createElement('div');
-	spinner.classList.add('d-flex', 'justify-content-center');
-	spinner.innerHTML = `<div class="spinner-border"></div>`;
-	document.querySelector('.container').appendChild(spinner);
 	try {
 		let stations = await axios({
 			url: `https://localhost:9103/interoperability/api/auxiliary/getstations/${current}`,
@@ -74,19 +75,23 @@ const loadData = async (current, datefrom, dateto) => {
 			}
 		});
 		let chargesBy = await axios({
-			url: `https://localhost:9103/interoperability/api/ChargesBy/aodos/${datefrom}/${dateto}`,
+			url: `https://localhost:9103/interoperability/api/ChargesBy/${current}/${datefrom}/${dateto}`,
 			method: 'get',
 			headers: {
 				'X-OBSERVATORY-AUTH': token
 			}
 		});
 
+		chargesBy = chargesBy.data;
+		operators = allOperators.filter((op) => op.op_name !== current);
+
+		console.log(chargesBy);
+
 		stations = stations.data.stations;
 		stationNames = [];
 		stations.forEach((st) => {
 			stationNames.push(st.st_name);
 		});
-		operators = operators.filter((op) => op.op_name !== current);
 
 		let home = [],
 			away = [];
@@ -109,46 +114,115 @@ const loadData = async (current, datefrom, dateto) => {
 			away.push(sum - numOfHome);
 		});
 
-		chargesBy = chargesBy.data;
-		let labels = operators.map((op) => op.op_abbr);
+		let passesCosts = await Promise.all(
+			operators.map(async (op) => {
+				let passescost = await axios({
+					url: `https://localhost:9103/interoperability/api/PassesCost/${op.op_name}/${current}/${datefrom}/${dateto}`,
+					method: 'get',
+					headers: {
+						'X-OBSERVATORY-AUTH': token
+					}
+				});
+				return passescost.data;
+			})
+		);
 
-		if (c1) c1.destroy();
+		let incomes = chargesBy.PPOList.map((el) => el.PassesCost);
+		let debts = passesCosts.map((el) => el.PassesCost);
+		let total = [];
+		for (let i = 0; i < incomes.length; ++i) total.push(incomes[i] - debts[i]);
+
+		document.querySelector('#table > thead').innerHTML = '';
+		document.querySelector('#table > tbody').innerHTML = '';
+		let cols = document.createElement('tr');
+		cols.classList.add('text-center');
+		let values = document.createElement('tr');
+		values.classList.add('text-center');
+		for (const i in total) {
+			let th = document.createElement('th');
+			th.innerHTML = `${operators[i].op_name
+				.replace(/_/g, ' ')
+				.replace(/(?: |\b)(\w)/g, function (key) {
+					return key.toUpperCase();
+				})}`;
+			cols.appendChild(th);
+			let td = document.createElement('td');
+			td.classList.add(total[i] > 0 ? 'text-success' : 'text-danger');
+			td.innerHTML = `${(Math.round(total[i] * 100) / 100).toFixed(2)}`;
+			values.append(td);
+		}
+		document.querySelector('#table > thead').appendChild(cols);
+		document.querySelector('#table > tbody').appendChild(values);
+
+		if (chargesGraph) chargesGraph.destroy();
+		if (totalPie) totalPie.destroy();
+		if (totalGraph) totalGraph.destroy();
 		if (c2) c2.destroy();
 		if (c3) c3.destroy();
-		c1 = new Chart(document.getElementById('chart1'), {
+		chargesGraph = new Chart(document.getElementById('chargesGraph'), {
 			type: 'bar',
 			data: {
-				labels: labels,
+				labels: operators.map((op) => op.op_abbr),
 				datasets: [
 					{
-						label: `Debts`,
-						backgroundColor: 'rgba(255, 99, 132, 0.2)',
-						borderColor: 'rgb(255, 99, 132)',
+						label: `Income`,
+						backgroundColor: 'rgba(75, 192, 192, 0.2)',
+						borderColor: 'rgb(75, 192, 192)',
 						borderWidth: 1,
-						data: chargesBy.PPOList.map((el) => el.PassesCost)
+						data: incomes
 					},
 					{
-						label: `Passes`,
-						backgroundColor: 'rgba(54, 162, 235, 0.2)',
-						borderColor: 'rgb(54, 162, 235)',
+						label: `Debts`,
+						borderColor: 'rgba(255, 99, 132)',
+						backgroundColor: 'rgba(255, 99, 132, 0.2)',
 						borderWidth: 1,
-						data: chargesBy.PPOList.map((el) => el.NumberOfPasses)
+						data: debts
 					}
 				]
 			},
 			options: {
+				maintainAspectRatio: false,
 				plugins: {
 					title: {
 						display: true,
-						text: `${current}`
+						text: `Earnings and Debts per Operator`
 					}
 				}
 			}
 		});
+
+		totalGraph = new Chart(document.getElementById('totalGraph'), {
+			type: 'bar',
+			data: {
+				labels: operators.map((op) => op.op_abbr),
+				datasets: [
+					{
+						label: `Total Income`,
+						borderColor: 'rgba(54, 162, 235)',
+						backgroundColor: 'rgba(54, 162, 235, 0.2)',
+						borderWidth: 1,
+						data: total
+					}
+				]
+			},
+			options: {
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: false
+					},
+					title: {
+						display: true,
+						text: `Total Income`
+					}
+				}
+			}
+		});
+
 		c2 = new Chart(document.getElementById('chart2'), {
 			type: 'pie',
 			data: {
-				labels: labels,
+				labels: operators.map((op) => op.op_abbr),
 				datasets: [
 					{
 						label: `Passes`,
@@ -176,6 +250,7 @@ const loadData = async (current, datefrom, dateto) => {
 				]
 			},
 			options: {
+				maintainAspectRatio: false,
 				plugins: {
 					title: {
 						display: true,
@@ -240,9 +315,8 @@ const loadData = async (current, datefrom, dateto) => {
 				window.location.replace('http://localhost:8000/login');
 			}
 		} else {
+			console.log(error);
 			createAlert('Network error, try logging in again', 'danger');
 		}
-	} finally {
-		spinner.remove();
 	}
 };
