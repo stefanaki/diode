@@ -88,8 +88,9 @@ module.exports = async (req, res) => {
 					status
 				]);
 			}
+
 			if (q1[0][0].PassesCost == q2[0][0].PassesCost) {
-				return sendResponse(req, res, 200, {
+				return sendResponse(req, res, 400, {
 					message: 'The settlement amount is zero'
 				});
 			}
