@@ -16,18 +16,17 @@ const picker = new Litepicker({
 	setup: function (picker) {
 		picker.on('selected', function (date1, date2) {
 			console.log(date1.format('YYYYMMDD') + ' - ' + date2.format('YYYYMMDD'));
-			if (document.querySelector('#operators').value !== 'Select operator')
-				loadData(
-					document.querySelector('#operators').value,
-					date1.format('YYYYMMDD'),
-					date2.format('YYYYMMDD')
-				);
+			loadData(
+				document.querySelector('#operators').value,
+				date1.format('YYYYMMDD'),
+				date2.format('YYYYMMDD')
+			);
 		});
 	}
 });
 
 document.querySelector('#operators').addEventListener('change', () => {
-	if (picker.getDate() && document.querySelector('#operators').value !== 'Select operator') {
+	if (picker.getDate()) {
 		loadData(
 			document.querySelector('#operators').value,
 			picker.getStartDate().format('YYYYMMDD'),
@@ -138,7 +137,9 @@ const loadData = async (current, datefrom, dateto) => {
 		cols.classList.add('text-center');
 		let values = document.createElement('tr');
 		values.classList.add('text-center');
+		let sum = 0;
 		for (const i in total) {
+			sum += total[i];
 			let th = document.createElement('th');
 			th.innerHTML = `${operators[i].op_name
 				.replace(/_/g, ' ')
@@ -151,6 +152,13 @@ const loadData = async (current, datefrom, dateto) => {
 			td.innerHTML = `${(Math.round(total[i] * 100) / 100).toFixed(2)}`;
 			values.append(td);
 		}
+		let th = document.createElement('th');
+		let td = document.createElement('td');
+		td.classList.add(sum > 0 ? 'text-success' : 'text-danger');
+		th.innerHTML = `<b>Total</b>`;
+		td.innerHTML = `${(Math.round(sum * 100) / 100).toFixed(2)}`;
+		cols.appendChild(th);
+		values.appendChild(td);
 		document.querySelector('#table > thead').appendChild(cols);
 		document.querySelector('#table > tbody').appendChild(values);
 
