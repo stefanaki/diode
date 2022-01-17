@@ -83,6 +83,7 @@ program
 	.option('--op2 <operatorID>', 'Operator ID 2')
 	.option('--datefrom <date>', 'Start of specified period')
 	.option('--dateto <date>', 'End of specified period')
+	.requiredOption('--format <format>', 'Response format type {json|csv}', 'json')
 	.action(require('./commands/settlements'));
 
 program

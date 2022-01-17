@@ -1,4 +1,5 @@
 const axios = require('axios');
+const moment = require('moment');
 const fs = require('fs');
 
 module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dateto, format }) => {
@@ -7,8 +8,10 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
 
 	if (verify && !settlid) return console.log('Settlement ID not specified');
 
-	if ((list || create) && !(op1 && op2 && datefrom && dateto))
+	if (create && !(op1 && op2 && datefrom && dateto))
 		return console.log("Please provide both dates and operator ID's");
+
+	if (list && !(datefrom && dateto)) return console.log('Please provide both dates');
 
 	if (list && !format) return console.log('Response format not specified');
 
@@ -57,6 +60,28 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
 			console.log(`Operator credited: ${createSettlement.data.operatorCredited}`);
 			console.log(`Operator debited: ${createSettlement.data.operatorDebited}`);
 			console.log(`Amount: ${createSettlement.data.amount.toFixed(2)}`);
+		}
+
+		if (list) {
+			const listSettlements = await axios({
+				url: `https://localhost:9103/interoperability/api/settlements/GetSettlements/${datefrom}/${dateto}`,
+				method: 'get',
+				headers: {
+					'X-OBSERVATORY-AUTH': token
+				},
+				httpsAgent: new require('https').Agent({ rejectUnauthorized: false })
+			});
+
+			const resData =
+				format === 'json'
+					? JSON.stringify(listSettlements.data, null, 4)
+					: passesAnalysis.data;
+
+			const filename = `settlements_${moment(datefrom, 'YYYYMMDD').format(
+				'YYYY-MM-DD'
+			)}_${moment(dateto, 'YYYYMMDD').format('YYYY-MM-DD')}.${format}`;
+			fs.writeFileSync(filename, resData);
+			console.log(`Created data file ${filename}`);
 		}
 	} catch (error) {
 		if (error.response && error.response.data && error.response.data.message) {
