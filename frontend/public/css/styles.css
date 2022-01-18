@@ -13,7 +13,7 @@ body {
 
 .container {
 	background-color: #fff;
-	width: 100%;
+	width: 100vw;
 	height: 100vh;
 }
 
@@ -91,4 +91,14 @@ body {
 	margin: 0 auto;
 	background-color: white;
 	min-height: 600px;
+}
+
+:root {
+	--litepicker-is-start-color-bg: #3459e6;
+	--litepicker-is-end-color-bg: #3459e6;
+	--litepicker-button-prev-month-color-hover: #3459e6;
+	--litepicker-button-next-month-color-hover: #3459e6;
+	--litepicker-day-color-hover: #3459e6;
+	--litepicker-is-in-range-color: #c2cdf7;
+	--litepicker-is-today-color: #e77477;
 }

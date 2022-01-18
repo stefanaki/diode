@@ -35,6 +35,71 @@ document.querySelector('#operators').addEventListener('change', () => {
 	}
 });
 
+document.querySelector('#stations').addEventListener('change', () => {
+	PassesPerStation(
+		document.querySelector('#stations').value,
+		picker.getStartDate().format('YYYYMMDD'),
+		picker.getEndDate().format('YYYYMMDD')
+	);
+});
+
+const PassesPerStation = async (station, datefrom, dateto) => {
+	try {
+		let response = await axios({
+			url: `https://localhost:9103/interoperability/api/passesperstation/${station}/${datefrom}/${dateto}`,
+			method: 'get',
+			headers: {
+				'X-OBSERVATORY-AUTH': token
+			}
+		});
+
+		let passesList = response.data.PassesList;
+		let div = document.querySelector('#passesperstation');
+		div.innerHTML = '';
+		let table = document.createElement('table');
+		table.id = 'tbl';
+		table.classList.add('table', 'dataTable', 'mb-3');
+		//old.parentNode.replaceChild(table, old);
+
+		console.log(passesList);
+
+		table.innerHTML = `
+		<thead class="table-light">
+			<tr>
+				<th>Index</th>
+				<th>Pass ID</th>
+				<th>Timestamp</th>
+				<th>Vehicle ID</th>
+				<th>Tag Provider</th>
+				<th>Type</th>		
+			</tr>
+		</thead>`;
+
+		let tableData = document.createElement('tbody');
+		passesList.forEach((pass) => {
+			let row = document.createElement('tr');
+			row.innerHTML = `
+				<td>${pass.PassIndex}</td>
+				<td>${pass.PassID}</td>
+				<td>${pass.PassTimeStamp}</td>
+				<td>${pass.VehicleID}</td>
+				<td>${pass.TagProvider.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
+					return key.toUpperCase();
+				})}</td>
+				<td>${pass.PassType}</td>	
+			`;
+			tableData.appendChild(row);
+		});
+		table.appendChild(tableData);
+
+		div.appendChild(table);
+
+		$('#tbl').DataTable();
+	} catch (error) {
+		console.log(error);
+	}
+};
+
 let allOperators = [];
 (async () => {
 	try {
@@ -92,9 +157,25 @@ const loadData = async (current, datefrom, dateto) => {
 			stationNames.push(st.st_name);
 		});
 
+		let stationList = document.querySelector('#stations');
+		stationList.innerHTML = '';
+		stations.forEach((st) => {
+			let opt = document.createElement('option');
+			opt.value = st.st_id;
+			opt.innerHTML = st.st_name.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
+				return key.toUpperCase();
+			});
+			stationList.appendChild(opt);
+		});
+
+		PassesPerStation(document.querySelector('#stations').value, datefrom, dateto);
+
 		let home = [],
 			away = [];
-		stations.forEach(async (st) => {
+
+		console.log(stations); /// ta stations einai me auksousa seira
+
+		for (const st of stations) {
 			let passesPerStation = await axios({
 				url: `https://localhost:9103/interoperability/api/PassesPerStation/${st.st_id}/${datefrom}/${dateto}`,
 				method: 'get',
@@ -104,6 +185,7 @@ const loadData = async (current, datefrom, dateto) => {
 			});
 
 			let sum = passesPerStation.data.NumberOfPasses;
+			console.log(st.st_id + ' ' + sum);
 			passesPerStation = passesPerStation.data.PassesList;
 			let numOfHome = passesPerStation.reduce(
 				(acc, pass) => (acc += pass.PassType == 'home' ? 1 : 0),
@@ -111,7 +193,7 @@ const loadData = async (current, datefrom, dateto) => {
 			);
 			home.push(numOfHome);
 			away.push(sum - numOfHome);
-		});
+		}
 
 		let passesCosts = await Promise.all(
 			operators.map(async (op) => {

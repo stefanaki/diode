@@ -15,7 +15,7 @@
 		<div class="my-container border">
 			<div class="tab-content" id="myTabContent">
 				<div class="d-flex flex-column justify-content-between align-items-center">
-					<div class="form-floating my-3">
+					<div class="form-floating my-3" style="width: 50%">
 						<select class="form-select" id="operators"></select>
 						<label for="operators">Operator</label>
 					</div>
@@ -65,7 +65,7 @@
 				</ul>
 				<div class="tab-pane fade show active" id="home" role="tabpanel">
 					<table id="table" class="table">
-						<thead></thead>
+						<thead class="table-light"></thead>
 						<tbody></tbody>
 					</table>
 					<div>
@@ -80,9 +80,14 @@
 					</div>
 				</div>
 				<div class="tab-pane fade" id="profile" role="tabpanel">
-					<div style="height: 400px; width: 100%">
+					<div class="mb-3" style="height: 400px; width: 100%">
 						<canvas id="area-3"></canvas>
 					</div>
+					<div class="form-floating mb-3" style="width: 50%; margin: auto">
+						<select class="form-select" id="stations"></select>
+						<label for="stations">Toll Stations</label>
+					</div>
+					<div id="passesperstation" class="p-3"></div>
 				</div>
 				<div class="tab-pane fade" id="contact" role="tabpanel">
 					<div style="height: 50%; width: 50%; margin: 0 auto">
