@@ -15,7 +15,7 @@
 		<div class="my-container border">
 			<div class="tab-content" id="myTabContent">
 				<div class="d-flex flex-column justify-content-between align-items-center">
-					<div class="form-floating my-3" style="width: 50%">
+					<div class="form-floating my-3" style="min-width: 50%">
 						<select class="form-select" id="operators"></select>
 						<label for="operators">Operator</label>
 					</div>
@@ -83,17 +83,17 @@
 					<div class="mb-3" style="height: 400px; width: 100%">
 						<canvas id="area-3"></canvas>
 					</div>
-					<div class="form-floating mb-3" style="width: 50%; margin: auto">
+					<hr />
+					<div class="form-floating" style="width: 50%; margin: auto">
 						<select class="form-select" id="stations"></select>
 						<label for="stations">Toll Stations</label>
 					</div>
+					<div style="height: 400px; width: 50%; margin: 3px auto">
+						<canvas style="width: 100%; height: 100%" id="awaypasses"></canvas>
+					</div>
 					<div id="passesperstation" class="p-3"></div>
 				</div>
-				<div class="tab-pane fade" id="contact" role="tabpanel">
-					<div style="height: 50%; width: 50%; margin: 0 auto">
-						<canvas style="width: 100%; height: 100%" id="chart2"></canvas>
-					</div>
-				</div>
+				<div class="tab-pane fade" id="contact" role="tabpanel"></div>
 			</div>
 		</div>
 		<%- include('./partials/footer'); %>

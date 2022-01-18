@@ -2,7 +2,7 @@ let token = localStorage.getItem('auth_token');
 let list = document.querySelector('#operators');
 
 let chargesGraph,
-	c2,
+	awayPassesGraph,
 	c3,
 	totalGraph,
 	totalPie = null;
@@ -43,63 +43,6 @@ document.querySelector('#stations').addEventListener('change', () => {
 	);
 });
 
-const PassesPerStation = async (station, datefrom, dateto) => {
-	try {
-		let response = await axios({
-			url: `https://localhost:9103/interoperability/api/passesperstation/${station}/${datefrom}/${dateto}`,
-			method: 'get',
-			headers: {
-				'X-OBSERVATORY-AUTH': token
-			}
-		});
-
-		let passesList = response.data.PassesList;
-		let div = document.querySelector('#passesperstation');
-		div.innerHTML = '';
-		let table = document.createElement('table');
-		table.id = 'tbl';
-		table.classList.add('table', 'dataTable', 'mb-3');
-		//old.parentNode.replaceChild(table, old);
-
-		console.log(passesList);
-
-		table.innerHTML = `
-		<thead class="table-light">
-			<tr>
-				<th>Index</th>
-				<th>Pass ID</th>
-				<th>Timestamp</th>
-				<th>Vehicle ID</th>
-				<th>Tag Provider</th>
-				<th>Type</th>		
-			</tr>
-		</thead>`;
-
-		let tableData = document.createElement('tbody');
-		passesList.forEach((pass) => {
-			let row = document.createElement('tr');
-			row.innerHTML = `
-				<td>${pass.PassIndex}</td>
-				<td>${pass.PassID}</td>
-				<td>${pass.PassTimeStamp}</td>
-				<td>${pass.VehicleID}</td>
-				<td>${pass.TagProvider.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
-					return key.toUpperCase();
-				})}</td>
-				<td>${pass.PassType}</td>	
-			`;
-			tableData.appendChild(row);
-		});
-		table.appendChild(tableData);
-
-		div.appendChild(table);
-
-		$('#tbl').DataTable();
-	} catch (error) {
-		console.log(error);
-	}
-};
-
 let allOperators = [];
 (async () => {
 	try {
@@ -128,6 +71,128 @@ let allOperators = [];
 		console.log(error);
 	}
 })();
+
+const PassesPerStation = async (station, datefrom, dateto) => {
+	try {
+		let response = await axios({
+			url: `https://localhost:9103/interoperability/api/passesperstation/${station}/${datefrom}/${dateto}`,
+			method: 'get',
+			headers: {
+				'X-OBSERVATORY-AUTH': token
+			}
+		});
+
+		let passesList = response.data.PassesList;
+		let div = document.querySelector('#passesperstation');
+		div.innerHTML = '';
+		let table = document.createElement('table');
+		table.id = 'tbl';
+		table.classList.add('table', 'dataTable', 'mb-3');
+		//old.parentNode.replaceChild(table, old);
+
+		console.log(passesList);
+
+		table.innerHTML = `
+		<thead class="table-light">
+			<tr>
+				<th class="text-end">Index</th>
+				<th>Pass ID</th>
+				<th>Timestamp</th>
+				<th>Vehicle ID</th>
+				<th>Tag Provider</th>
+				<th>Type</th>	
+				<th class="text-end">Charge</th>	
+			</tr>
+		</thead>`;
+
+		let tableData = document.createElement('tbody');
+		let passes = [];
+		allOperators.map((op) => passes.push({ op: op.op_name, sum: 0 }));
+		console.log(passes);
+		passesList.forEach((pass) => {
+			let row = document.createElement('tr');
+			row.innerHTML = `
+				<td class="text-end">${pass.PassIndex}</td>
+				<td>${pass.PassID}</td>
+				<td>${pass.PassTimeStamp}</td>
+				<td>${pass.VehicleID}</td>
+				<td>${pass.TagProvider.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
+					return key.toUpperCase();
+				})}</td>
+				<td>${pass.PassType}</td>	
+				<td class="text-end">${(Math.round(pass.PassCharge * 100) / 100).toFixed(2)}</td>
+			`;
+			tableData.appendChild(row);
+
+			passes.forEach((p) => {
+				if (p.op === pass.TagProvider) {
+					p.sum++;
+					return;
+				}
+			});
+		});
+		table.appendChild(tableData);
+		console.log(passes);
+
+		div.appendChild(table);
+
+		$('#tbl').DataTable();
+
+		//passes.sort((a, b) => (a.sum < b.sum ? 1 : -1));
+		console.log(passes);
+
+		if (awayPassesGraph) awayPassesGraph.destroy();
+		awayPassesGraph = new Chart(document.getElementById('awaypasses'), {
+			type: 'pie',
+			data: {
+				labels: passes.map((p) =>
+					p.op.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
+						return key.toUpperCase();
+					})
+				),
+				datasets: [
+					{
+						label: `Passes`,
+						backgroundColor: [
+							'rgba(255, 99, 132, 0.2)',
+							'rgba(255, 159, 64, 0.2)',
+							'rgba(255, 205, 86, 0.2)',
+							'rgba(75, 192, 192, 0.2)',
+							'rgba(54, 162, 235, 0.2)',
+							'rgba(153, 102, 255, 0.2)',
+							'rgba(201, 203, 207, 0.2)'
+						],
+						borderColor: [
+							'rgb(255, 99, 132)',
+							'rgb(255, 159, 64)',
+							'rgb(255, 205, 86)',
+							'rgb(75, 192, 192)',
+							'rgb(54, 162, 235)',
+							'rgb(153, 102, 255)',
+							'rgb(201, 203, 207)'
+						],
+						borderWidth: 1,
+						data: passes.map((p) => p.sum)
+					}
+				]
+			},
+			options: {
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						position: 'right'
+					},
+					title: {
+						display: true,
+						text: `Passes per Tag Provider`
+					}
+				}
+			}
+		});
+	} catch (error) {
+		console.log(error);
+	}
+};
 
 const loadData = async (current, datefrom, dateto) => {
 	try {
@@ -247,7 +312,6 @@ const loadData = async (current, datefrom, dateto) => {
 		if (chargesGraph) chargesGraph.destroy();
 		if (totalPie) totalPie.destroy();
 		if (totalGraph) totalGraph.destroy();
-		if (c2) c2.destroy();
 		if (c3) c3.destroy();
 		chargesGraph = new Chart(document.getElementById('chargesGraph'), {
 			type: 'bar',
@@ -304,47 +368,6 @@ const loadData = async (current, datefrom, dateto) => {
 					title: {
 						display: true,
 						text: `Total Income`
-					}
-				}
-			}
-		});
-
-		c2 = new Chart(document.getElementById('chart2'), {
-			type: 'pie',
-			data: {
-				labels: operators.map((op) => op.op_abbr),
-				datasets: [
-					{
-						label: `Passes`,
-						backgroundColor: [
-							'rgba(255, 99, 132, 0.2)',
-							'rgba(255, 159, 64, 0.2)',
-							'rgba(255, 205, 86, 0.2)',
-							'rgba(75, 192, 192, 0.2)',
-							'rgba(54, 162, 235, 0.2)',
-							'rgba(153, 102, 255, 0.2)',
-							'rgba(201, 203, 207, 0.2)'
-						],
-						borderColor: [
-							'rgb(255, 99, 132)',
-							'rgb(255, 159, 64)',
-							'rgb(255, 205, 86)',
-							'rgb(75, 192, 192)',
-							'rgb(54, 162, 235)',
-							'rgb(153, 102, 255)',
-							'rgb(201, 203, 207)'
-						],
-						borderWidth: 1,
-						data: chargesBy.PPOList.map((el) => el.NumberOfPasses)
-					}
-				]
-			},
-			options: {
-				maintainAspectRatio: false,
-				plugins: {
-					title: {
-						display: true,
-						text: `Passes Analysis`
 					}
 				}
 			}
