@@ -25,6 +25,13 @@ const picker = new Litepicker({
 	}
 });
 
+const unhide = () => {
+	document.querySelector('#myTab').classList.remove('d-none');
+	document.querySelector('#home').classList.remove('d-none');
+	document.querySelector('#contact').classList.remove('d-none');
+	document.querySelector('#profile').classList.remove('d-none');
+};
+
 document.querySelector('#operators').addEventListener('change', () => {
 	if (picker.getDate()) {
 		loadData(
@@ -210,6 +217,8 @@ const loadData = async (current, datefrom, dateto) => {
 				'X-OBSERVATORY-AUTH': token
 			}
 		});
+
+		unhide();
 
 		chargesBy = chargesBy.data;
 		operators = allOperators.filter((op) => op.op_name !== current);
