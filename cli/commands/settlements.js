@@ -55,11 +55,11 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
 
 			console.log(`Settlement has been created successfully`);
 			console.log(
-				`Time period: ${createSettlement.data.periodFrom} - ${createSettlement.data.periodTo}`
+				`Time period: ${createSettlement.data.PeriodFrom} - ${createSettlement.data.PeriodTo}`
 			);
-			console.log(`Operator credited: ${createSettlement.data.operatorCredited}`);
-			console.log(`Operator debited: ${createSettlement.data.operatorDebited}`);
-			console.log(`Amount: ${createSettlement.data.amount.toFixed(2)}`);
+			console.log(`Operator credited: ${createSettlement.data.OperatorCredited}`);
+			console.log(`Operator debited: ${createSettlement.data.OperatorDebited}`);
+			console.log(`Amount: ${createSettlement.data.Amount.toFixed(2)}`);
 		}
 
 		if (list) {
