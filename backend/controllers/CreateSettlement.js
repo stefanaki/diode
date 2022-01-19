@@ -109,11 +109,11 @@ module.exports = async (req, res) => {
 
 			sendResponse(req, res, 200, {
 				message: 'Settlement has been created successfully',
-				periodFrom: `${moment(date_from, 'YYYYMMDD').format(format)}`,
-				periodTo: `${moment(date_to, 'YYYYMMDD').format(format)}`,
-				operatorCredited: credited,
-				operatorDebited: debited,
-				amount
+				PeriodFrom: `${moment(date_from, 'YYYYMMDD').format(format)}`,
+				PeriodTo: `${moment(date_to, 'YYYYMMDD').format(format)}`,
+				OperatorCredited: credited,
+				OperatorDebited: debited,
+				Amount: amount
 			});
 		} catch (error) {
 			console.log(error);
