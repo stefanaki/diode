@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "27e645c0-d152-4f73-aec3-31407db78275",
+		"_postman_id": "a116ca06-cbfe-44f1-9213-f02a7f52002a",
 		"name": "Diode API",
-		"description": "DiodeIO RESTful API for Toll Station Interoperability Data\n\n## Base URL\nUse ```https://localhost:9103/interoperability/api/```for all your requests.\n\n## Date Formatting\nEvery endpoint that requires a date field must be populated with a date of the format ```YYYYMMDD```, otherwise the server will respond with an invalid request error.\n\n## JSON & CSV Functionality\nEvery available endpoint can respond with either JSON or CSV format. You have to specify your desired response type in the query parameter ```format={json|csv}```. By default the API will respond with JSON.",
+		"description": "DiodeIO RESTful API for Toll Station Interoperability Data\n\n## Base URL\nUse ```https://localhost:9103/interoperability/api/```for all your requests.\n\n## Date Formatting\nEvery endpoint that requires a date field must be populated with a date of the format ```YYYYMMDD```, otherwise the server will respond with an invalid date format error.\n\n## JSON & CSV Functionality\nEvery available endpoint can respond with either JSON or CSV format. You have to specify your desired response type in the query parameter ```format={json|csv}```. By default the API will respond with JSON.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -359,7 +359,7 @@
 									"",
 									"pm.test(\"Response has correct values\", function() {",
 									"    pm.expect(responseJson.status).to.be.eql('OK');",
-									"    pm.expect(responseJson.dbconnection).to.be.eql('mysql;host=localhost;db_name=diode_io;user=root;password=rootroot123;connection_limit=10');",
+									"    pm.expect(responseJson.dbconnection).to.be.eql('mysql;host=db;port=3306;db_name=diode_io;user=root;password=rootroot123;connection_limit=10');",
 									"});",
 									""
 								],
@@ -367,6 +367,9 @@
 							}
 						}
 					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [
@@ -377,6 +380,10 @@
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
 						"url": {
 							"raw": "{{base}}/admin/healthcheck",
 							"host": [
@@ -396,17 +403,16 @@
 								"method": "GET",
 								"header": [
 									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									},
-									{
 										"key": "X-OBSERVATORY-AUTH",
-										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjQwMDg5NjU4LCJleHAiOjE2NDAwOTY4NTh9.0knN-JwPewUInxlan32C3sgKA-v3eSB-tyKjdIDFyFI",
+										"value": "{{auth_token}}",
 										"description": "Authentication token provided by log in endpoint",
 										"type": "text"
 									}
 								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
 								"url": {
 									"raw": "{{base}}/admin/healthcheck",
 									"host": [
@@ -427,20 +433,24 @@
 									"value": "Express"
 								},
 								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
 									"key": "Content-Type",
 									"value": "application/json; charset=utf-8"
 								},
 								{
 									"key": "Content-Length",
-									"value": "121"
+									"value": "124"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"79-svEADA3khdCZVClQyFAQymq0tLQ\""
+									"value": "W/\"7c-vsJn1vXJkgbidJZA2+y95UUXLJI\""
 								},
 								{
 									"key": "Date",
-									"value": "Tue, 21 Dec 2021 12:29:36 GMT"
+									"value": "Wed, 19 Jan 2022 18:40:31 GMT"
 								},
 								{
 									"key": "Connection",
@@ -452,7 +462,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"OK\",\n    \"dbconnection\": \"mysql;host=localhost;db_name=diode_io;user=root;password=rootroot123;connection_limit=10\"\n}"
+							"body": "{\n    \"status\": \"OK\",\n    \"dbconnection\": \"mysql;host=db;port=3306;db_name=diode_io;user=root;password=rootroot123;connection_limit=10\"\n}"
 						}
 					]
 				},
@@ -502,7 +512,7 @@
 								"resetpasses"
 							]
 						},
-						"description": "Erases all stored passing events from the database."
+						"description": "Erases all stored passing events from the database and resets the default admin credentials."
 					},
 					"response": [
 						{
@@ -617,7 +627,7 @@
 								"resetstations"
 							]
 						},
-						"description": "Resets the stored station data to the initial sample dataset.\n>Make sure you have reset the pass events first or else you won't be able to use this endpoint."
+						"description": "Resets the stored station data to the initial sample dataset.\nMake sure you have reset the pass events first or else you won't be able to use this endpoint."
 					},
 					"response": [
 						{
@@ -819,7 +829,7 @@
 			"description": "In order to gain access to the following routes, you should include in the ```X-OBSERVATORY-AUTH``` header of the request your log in token."
 		},
 		{
-			"name": "Main Routes",
+			"name": "Pass Event Routes",
 			"item": [
 				{
 					"name": "PassesPerStation",
@@ -901,22 +911,16 @@
 								{
 									"key": "stationID",
 									"value": "OO02",
-									"type": "text",
-									"enabled": true,
 									"description": "Station ID"
 								},
 								{
 									"key": "date_from",
 									"value": "20210109",
-									"type": "text",
-									"enabled": true,
 									"description": "Start of specified period"
 								},
 								{
 									"key": "date_to",
 									"value": "20210709",
-									"type": "text",
-									"enabled": true,
 									"description": "End of specified period"
 								}
 							]
@@ -1421,29 +1425,21 @@
 								{
 									"key": "op_ID1",
 									"value": "aodos",
-									"type": "text",
-									"enabled": true,
 									"description": "Operator ID 1"
 								},
 								{
 									"key": "op_ID2",
 									"value": "egnatia",
-									"type": "text",
-									"enabled": true,
 									"description": "Operator ID 2"
 								},
 								{
 									"key": "date_from",
 									"value": "20210115",
-									"type": "text",
-									"enabled": true,
 									"description": "Start of specified period"
 								},
 								{
 									"key": "date_to",
 									"value": "20210520",
-									"type": "text",
-									"enabled": true,
 									"description": "End of specified period"
 								}
 							]
@@ -1770,34 +1766,26 @@
 								{
 									"key": "op_ID1",
 									"value": "aodos",
-									"type": "text",
-									"enabled": true,
 									"description": "Operator ID 1"
 								},
 								{
 									"key": "op_ID2",
 									"value": "egnatia",
-									"type": "text",
-									"enabled": true,
 									"description": "Operator ID 2"
 								},
 								{
 									"key": "date_from",
 									"value": "20210101",
-									"type": "text",
-									"enabled": true,
 									"description": "Start of specified period"
 								},
 								{
 									"key": "date_to",
 									"value": "20211020",
-									"type": "text",
-									"enabled": true,
 									"description": "End of specified period"
 								}
 							]
 						},
-						"description": "Returns a summary of the pass events of vehicles with tags of ```op_ID2``` at toll stations of ```op_ID1``` in the specified time period."
+						"description": "Returns a logistic summary of the pass events of vehicles with tags of ```op_ID2``` at toll stations of ```op_ID1``` in the specified time period."
 					},
 					"response": [
 						{
@@ -2072,27 +2060,21 @@
 								{
 									"key": "op_ID",
 									"value": "aodos",
-									"type": "text",
-									"enabled": true,
 									"description": "Operator ID"
 								},
 								{
 									"key": "date_from",
 									"value": "20210101",
-									"type": "text",
-									"enabled": true,
 									"description": "Start of specified period "
 								},
 								{
 									"key": "date_to",
 									"value": "20210501",
-									"type": "text",
-									"enabled": true,
 									"description": "End of specified period "
 								}
 							]
 						},
-						"description": "Returns the debts of ``op_ID`` to every other operator in the specified time period."
+						"description": "Returns the debts of every operator to `op_ID` as well as the number of pass events by every other operator to the specified one."
 					},
 					"response": [
 						{
@@ -2253,6 +2235,550 @@
 				}
 			],
 			"description": "Make sure you include your authentication token in the `X-OBSERVATORY-AUTH` header in order to execute the following endpoints."
+		},
+		{
+			"name": "Settlement Routes",
+			"item": [
+				{
+					"name": "GetSettlements",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response body is in correct format\", function () {",
+									"    pm.expect(responseJson.PeriodFrom).to.be.a('string');",
+									"    pm.expect(responseJson.PeriodTo).to.be.a('string');",
+									"    pm.expect(responseJson.TotalSettlements).to.be.a('number');",
+									"    pm.expect(responseJson.CompletedSettlements).to.be.a('number');",
+									"    pm.expect(responseJson.PendingSettlements).to.be.a('number');",
+									"    pm.expect(responseJson.SettlementsList).to.be.a('array');",
+									"});",
+									"",
+									"pm.test(\"SettlementsList contains the right fields\", function () {",
+									"    pm.expect(responseJson.SettlementsList[0]).to.have.keys(['OperatorCredited', 'OperatorDebited', 'DateFrom', 'DateTo', 'Amount', 'Status']);",
+									"});",
+									"",
+									"pm.test(\"SettlementsList fields are in the correct format\", function () {",
+									"    pm.expect(responseJson.SettlementsList[0].OperatorCredited).to.be.a('string');",
+									"    pm.expect(responseJson.SettlementsList[0].OperatorDebited).to.be.a('string');",
+									"    pm.expect(responseJson.SettlementsList[0].DateFrom).to.be.a('string');",
+									"    pm.expect(responseJson.SettlementsList[0].DateTo).to.be.a('string');",
+									"    pm.expect(responseJson.SettlementsList[0].Amount).to.be.a('number');",
+									"    pm.expect(responseJson.SettlementsList[0].Status).to.be.a('number');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{auth_token}}",
+								"description": "Authentication token provided by log in endpoint",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base}}/settlements/GetSettlements/:date_from/:date_to",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"settlements",
+								"GetSettlements",
+								":date_from",
+								":date_to"
+							],
+							"variable": [
+								{
+									"key": "date_from",
+									"value": "{{date_from}}",
+									"description": "Start of specified period"
+								},
+								{
+									"key": "date_to",
+									"value": "{{date_to}}",
+									"description": "End of specified period"
+								}
+							]
+						},
+						"description": "Returns all the settlements in the specified date period."
+					},
+					"response": [
+						{
+							"name": "GetSettlements successful",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{auth_token}}",
+										"description": "Authentication token provided by log in endpoint",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base}}/settlements/GetSettlements/:date_from/:date_to",
+									"host": [
+										"{{base}}"
+									],
+									"path": [
+										"settlements",
+										"GetSettlements",
+										":date_from",
+										":date_to"
+									],
+									"variable": [
+										{
+											"key": "date_from",
+											"value": "{{date_from}}",
+											"description": "Start of specified period"
+										},
+										{
+											"key": "date_to",
+											"value": "{{date_to}}",
+											"description": "End of specified period"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "4351"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"10ff-VRPptJL+1mMp2cDmZ5xFe73j+M8\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 19 Jan 2022 18:45:12 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"PeriodFrom\": \"2020-10-10\",\n    \"PeriodTo\": \"2021-10-10\",\n    \"TotalSettlements\": 32,\n    \"CompletedSettlements\": 18,\n    \"PendingSettlements\": 14,\n    \"SettlementsList\": [\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 8.4,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 0.4,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.5,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.5,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"kentriki_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 3.25,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 1.5,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.9,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 4.7,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 1.5,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 1.25,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 8.4,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"kentriki_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 3.25,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"moreas\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 3.5,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.9,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 1.25,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 18.05,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 18.05,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 4.2,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 0.4,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"moreas\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 3.5,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 4.2,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"nea_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 5.7,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 4.7,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"nea_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 5.7,\n            \"Status\": 1\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "CreateSettlement",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response body is in correct format\", function () {",
+									"    pm.expect(responseJson.message).to.be.a('string');",
+									"    pm.expect(responseJson.PeriodFrom).to.be.a('string');",
+									"    pm.expect(responseJson.PeriodTo).to.be.a('string');",
+									"    pm.expect(responseJson.OperatorCredited).to.be.a('string');",
+									"    pm.expect(responseJson.OperatorDebited).to.be.a('string');",
+									"    pm.expect(responseJson.Amount).to.be.a('number');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{auth_token}}",
+								"description": "Authentication token provided by log in endpoint",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "op1_ID",
+									"value": "olympia_odos",
+									"description": "Operator 1 ID",
+									"type": "text"
+								},
+								{
+									"key": "op2_ID",
+									"value": "kentriki_odos",
+									"description": "Operator 2 ID",
+									"type": "text"
+								},
+								{
+									"key": "date_from",
+									"value": "20190107",
+									"description": "Start of specified time period",
+									"type": "text"
+								},
+								{
+									"key": "date_to",
+									"value": "20200101",
+									"description": "End of specified time period",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base}}/settlements/CreateSettlement",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"settlements",
+								"CreateSettlement"
+							]
+						},
+						"description": "Generate the settlement that corresponds to the operators `op1_ID`, `op2_ID` in the specified time period."
+					},
+					"response": [
+						{
+							"name": "CreateSettlement successful",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{auth_token}}",
+										"description": "Authentication token provided by log in endpoint",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "op1_ID",
+											"value": "olympia_odos",
+											"description": "Operator 1 ID",
+											"type": "text"
+										},
+										{
+											"key": "op2_ID",
+											"value": "kentriki_odos",
+											"description": "Operator 2 ID",
+											"type": "text"
+										},
+										{
+											"key": "date_from",
+											"value": "20190107",
+											"description": "Start of specified time period",
+											"type": "text"
+										},
+										{
+											"key": "date_to",
+											"value": "20200101",
+											"description": "End of specified time period",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base}}/settlements/CreateSettlement",
+									"host": [
+										"{{base}}"
+									],
+									"path": [
+										"settlements",
+										"CreateSettlement"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "205"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"cd-7rb/fyXYu1KuL5nZVsNyZ2XHtsI\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 19 Jan 2022 19:15:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Settlement has been created successfully\",\n    \"PeriodFrom\": \"2019-01-07 00:00:00\",\n    \"PeriodTo\": \"2020-01-01 00:00:00\",\n    \"OperatorCredited\": \"kentriki_odos\",\n    \"OperatorDebited\": \"olympia_odos\",\n    \"Amount\": 49.75\n}"
+						}
+					]
+				},
+				{
+					"name": "VerifySettlement",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Response body is in correct format\", function () {",
+									"    pm.expect(responseJson.message).to.be.a('string');",
+									"});",
+									"",
+									"pm.test(\"Response has correct values\", function() {",
+									"    pm.expect(responseJson.message).to.be.eql('Settlement has been updated successfully!');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OBSERVATORY-AUTH",
+								"value": "{{auth_token}}",
+								"type": "text",
+								"description": "Authentication token provided by log in endpoint"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "set_id",
+									"value": "{{settlementID}}",
+									"description": "Settlement ID",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base}}/settlements/VerifySettlement",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"settlements",
+								"VerifySettlement"
+							]
+						},
+						"description": "Mark a settlement's deposit status as completed. You need Payment Service Provider privileges to execute this endpoint."
+					},
+					"response": [
+						{
+							"name": "VerifySettlement successful",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{auth_token}}",
+										"type": "text",
+										"description": "Authentication token provided by log in endpoint"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "set_id",
+											"value": "{{settlementID}}",
+											"description": "Settlement ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base}}/settlements/VerifySettlement",
+									"host": [
+										"{{base}}"
+									],
+									"path": [
+										"settlements",
+										"VerifySettlement"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "55"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"37-gN1bFXxDssLv0PXwZBfii9jV758\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 19 Jan 2022 18:55:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Settlement has been updated successfully!\"\n}"
+						},
+						{
+							"name": "VerifySettlement no bank privileges",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-OBSERVATORY-AUTH",
+										"value": "{{auth_token}}",
+										"type": "text",
+										"description": "Authentication token provided by log in endpoint"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "set_id",
+											"value": "{{settlementID}}",
+											"description": "Settlement ID",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base}}/settlements/VerifySettlement",
+									"host": [
+										"{{base}}"
+									],
+									"path": [
+										"settlements",
+										"VerifySettlement"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "83"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"53-KH7CDiy1qg4U+rqtoKmrAoXNBqs\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 19 Jan 2022 18:54:13 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"You need payment service provider privileges to execute this endpoint\"\n}"
+						}
+					]
+				}
+			],
+			"description": "The following endpoints have to do with the management of the logistical settlements between the operators.\n\nMake sure you include your authentication token in the `X-OBSERVATORY-AUTH` header in order to execute the following endpoints."
 		}
 	],
 	"variable": [
