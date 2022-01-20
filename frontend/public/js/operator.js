@@ -1,11 +1,29 @@
 let token = localStorage.getItem('auth_token');
 let list = document.querySelector('#operators');
+let days = [];
 
 let chargesGraph,
 	awayPassesGraph,
 	c3,
 	totalGraph,
-	totalPie = null;
+	totalPie,
+	passesPerDayGraph = null;
+
+const getDatesBetweenDates = (startDate, endDate) => {
+	let dates = []
+	//to avoid modifying the original date
+	const theDate = new Date(startDate)
+	while (theDate < endDate) {
+		dates = [...dates, new Date(theDate)]
+		theDate.setDate(theDate.getDate() + 1)
+	}
+	return dates
+}
+
+const datesAreOnSameDay = (first, second) =>
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate();
 
 const picker = new Litepicker({
 	element: document.querySelector('#litepicker'),
@@ -15,7 +33,7 @@ const picker = new Litepicker({
 	inlineMode: true,
 	setup: function (picker) {
 		picker.on('selected', function (date1, date2) {
-			console.log(date1.format('YYYYMMDD') + ' - ' + date2.format('YYYYMMDD'));
+			days = getDatesBetweenDates(date1.toJSDate(), date2.toJSDate());
 			loadData(
 				document.querySelector('#operators').value,
 				date1.format('YYYYMMDD'),
@@ -50,6 +68,17 @@ document.querySelector('#stations').addEventListener('change', () => {
 	);
 });
 
+document.querySelector('#otheroperators').addEventListener('change', () => {
+	if (picker.getDate()) {
+		PassesAnalysis(
+			document.querySelector('#operators').value,
+			document.querySelector('#otheroperators').value,
+			picker.getStartDate().format('YYYYMMDD'),
+			picker.getEndDate().format('YYYYMMDD')
+		);
+	}
+});
+
 let allOperators = [];
 (async () => {
 	try {
@@ -62,7 +91,6 @@ let allOperators = [];
 		});
 
 		allOperators = allOperators.data.operators;
-		console.log(allOperators);
 
 		allOperators.forEach((op) => {
 			let selection = document.createElement('option');
@@ -90,14 +118,14 @@ const PassesPerStation = async (station, datefrom, dateto) => {
 		});
 
 		let passesList = response.data.PassesList;
+
+		
+
 		let div = document.querySelector('#passesperstation');
 		div.innerHTML = '';
 		let table = document.createElement('table');
 		table.id = 'tbl';
 		table.classList.add('table', 'dataTable', 'mb-3');
-		//old.parentNode.replaceChild(table, old);
-
-		console.log(passesList);
 
 		table.innerHTML = `
 		<thead class="table-light">
@@ -115,7 +143,7 @@ const PassesPerStation = async (station, datefrom, dateto) => {
 		let tableData = document.createElement('tbody');
 		let passes = [];
 		allOperators.map((op) => passes.push({ op: op.op_name, sum: 0 }));
-		console.log(passes);
+		
 		passesList.forEach((pass) => {
 			let row = document.createElement('tr');
 			row.innerHTML = `
@@ -139,14 +167,10 @@ const PassesPerStation = async (station, datefrom, dateto) => {
 			});
 		});
 		table.appendChild(tableData);
-		console.log(passes);
 
 		div.appendChild(table);
 
 		$('#tbl').DataTable();
-
-		//passes.sort((a, b) => (a.sum < b.sum ? 1 : -1));
-		console.log(passes);
 
 		if (awayPassesGraph) awayPassesGraph.destroy();
 		awayPassesGraph = new Chart(document.getElementById('awaypasses'), {
@@ -201,6 +225,62 @@ const PassesPerStation = async (station, datefrom, dateto) => {
 	}
 };
 
+const PassesAnalysis = async (op1, op2, datefrom, dateto) => {
+	console.log(`executing analysis for ${op1} ${op2} ${datefrom} ${dateto}`);
+
+	try {
+		let response = await axios({
+			url: `https://localhost:9103/interoperability/api/PassesAnalysis/${op1}/${op2}/${datefrom}/${dateto}`,
+			method: 'get',
+			headers: {
+				'X-OBSERVATORY-AUTH': token
+			}
+		});
+
+		let passesList = response.data.PassesList;
+
+		let div = document.querySelector('#passesanalysis');
+		div.innerHTML = '';
+		let table = document.createElement('table');
+		table.id = 'tbl2';
+		table.classList.add('table', 'dataTable', 'mb-3');
+
+		table.innerHTML = `
+		<thead class="table-light">
+			<tr>
+				<th class="text-end">Index</th>
+				<th>Pass ID</th>
+				<th>Timestamp</th>
+				<th>Station ID</th>
+				<th>Vehicle ID</th>
+				<th class="text-end">Charge</th>	
+			</tr>
+		</thead>`;
+
+		let tableData = document.createElement('tbody');
+		
+		passesList.forEach((pass) => {
+			let row = document.createElement('tr');
+			row.innerHTML = `
+				<td class="text-end">${pass.PassIndex}</td>
+				<td>${pass.PassID}</td>
+				<td>${pass.TimeStamp}</td>
+				<td>${pass.StationID}</td>
+				<td>${pass.VehicleID}</td>
+				<td class="text-end">${(Math.round(pass.Charge * 100) / 100).toFixed(2)}</td>
+			`;
+			tableData.appendChild(row);
+		});
+		table.appendChild(tableData);
+
+		div.appendChild(table);
+
+		$('#tbl2').DataTable();
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 const loadData = async (current, datefrom, dateto) => {
 	try {
 		let stations = await axios({
@@ -223,8 +303,6 @@ const loadData = async (current, datefrom, dateto) => {
 		chargesBy = chargesBy.data;
 		operators = allOperators.filter((op) => op.op_name !== current);
 
-		console.log(chargesBy);
-
 		stations = stations.data.stations;
 		stationNames = [];
 		stations.forEach((st) => {
@@ -244,10 +322,29 @@ const loadData = async (current, datefrom, dateto) => {
 
 		PassesPerStation(document.querySelector('#stations').value, datefrom, dateto);
 
+		let otherOperatorsList =  document.querySelector('#otheroperators');
+
+		if (otherOperatorsList.value == '' || otherOperatorsList.value == list.value) {
+			otherOperatorsList.innerHTML = '';
+			operators.forEach(op => {
+				let opt = document.createElement('option');
+				opt.value = op.op_name;
+				opt.innerHTML = op.op_name.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
+					return key.toUpperCase();
+				});
+				otherOperatorsList.appendChild(opt);
+			})
+		}
+		PassesAnalysis(current, document.querySelector('#otheroperators').value, datefrom, dateto);
+
 		let home = [],
 			away = [];
 
-		console.log(stations); /// ta stations einai me auksousa seira
+		let numOfPassesPerDay = [];
+		days.forEach(day => numOfPassesPerDay.push({
+			day: day,
+			sum: 0
+		}));
 
 		for (const st of stations) {
 			let passesPerStation = await axios({
@@ -259,15 +356,21 @@ const loadData = async (current, datefrom, dateto) => {
 			});
 
 			let sum = passesPerStation.data.NumberOfPasses;
-			console.log(st.st_id + ' ' + sum);
-			passesPerStation = passesPerStation.data.PassesList;
-			let numOfHome = passesPerStation.reduce(
-				(acc, pass) => (acc += pass.PassType == 'home' ? 1 : 0),
-				0
-			);
+			let numOfHome = 0;
+			passesPerStation.data.PassesList.forEach(pass => {
+				if (pass.PassType == 'home') numOfHome++;
+
+				numOfPassesPerDay.forEach(d => {
+					if (datesAreOnSameDay(d.day, moment(pass.PassTimeStamp, 'YYYY-MM-DD HH:mm:ss').toDate()))
+						d.sum++;
+				});
+			})
+
 			home.push(numOfHome);
 			away.push(sum - numOfHome);
 		}
+
+		console.log(numOfPassesPerDay);
 
 		let passesCosts = await Promise.all(
 			operators.map(async (op) => {
@@ -322,6 +425,7 @@ const loadData = async (current, datefrom, dateto) => {
 		if (totalPie) totalPie.destroy();
 		if (totalGraph) totalGraph.destroy();
 		if (c3) c3.destroy();
+		if (passesPerDayGraph) passesPerDayGraph.destroy();
 		chargesGraph = new Chart(document.getElementById('chargesGraph'), {
 			type: 'bar',
 			data: {
@@ -427,6 +531,38 @@ const loadData = async (current, datefrom, dateto) => {
 				}
 			}
 		});
+
+		passesPerDayGraph = new Chart(document.getElementById('passesperday'), {
+			type: 'line',
+			data: {
+				labels: numOfPassesPerDay.map(n => moment(n.day).format('YYYY-MM-DD')),
+				datasets: [
+					{
+						label: 'Dataset 1',
+						data: numOfPassesPerDay.map(n => n.sum),
+						borderColor: 'rgba(54, 162, 235)',
+						backgroundColor: 'rgba(54, 162, 235, 0.2)',
+						cubicInterpolationMode: 'monotone',
+						tension: 0.4
+					}
+				]
+			},
+			
+			options: {
+				maintainAspectRatio: false,
+			  responsive: true,
+			  plugins: {
+				legend: {
+				  position: 'top',
+				  display: false
+				},
+				title: {
+				  display: true,
+				  text: 'Passes per Day'
+				}
+			  }
+			},
+		  });
 	} catch (error) {
 		if (error.response) {
 			if (error.response.status === 402)
