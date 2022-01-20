@@ -4,26 +4,26 @@ let days = [];
 
 let chargesGraph,
 	awayPassesGraph,
-	c3,
+	passesGraph,
 	totalGraph,
 	totalPie,
 	passesPerDayGraph = null;
 
 const getDatesBetweenDates = (startDate, endDate) => {
-	let dates = []
+	let dates = [];
 	//to avoid modifying the original date
-	const theDate = new Date(startDate)
+	const theDate = new Date(startDate);
 	while (theDate < endDate) {
-		dates = [...dates, new Date(theDate)]
-		theDate.setDate(theDate.getDate() + 1)
+		dates = [...dates, new Date(theDate)];
+		theDate.setDate(theDate.getDate() + 1);
 	}
-	return dates
-}
+	return dates;
+};
 
 const datesAreOnSameDay = (first, second) =>
-    first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth() &&
-    first.getDate() === second.getDate();
+	first.getFullYear() === second.getFullYear() &&
+	first.getMonth() === second.getMonth() &&
+	first.getDate() === second.getDate();
 
 const picker = new Litepicker({
 	element: document.querySelector('#litepicker'),
@@ -45,9 +45,9 @@ const picker = new Litepicker({
 
 const unhide = () => {
 	document.querySelector('#myTab').classList.remove('d-none');
-	document.querySelector('#home').classList.remove('d-none');
-	document.querySelector('#contact').classList.remove('d-none');
-	document.querySelector('#profile').classList.remove('d-none');
+	document.querySelector('#charges').classList.remove('d-none');
+	document.querySelector('#stations').classList.remove('d-none');
+	document.querySelector('#passes').classList.remove('d-none');
 };
 
 document.querySelector('#operators').addEventListener('change', () => {
@@ -60,9 +60,9 @@ document.querySelector('#operators').addEventListener('change', () => {
 	}
 });
 
-document.querySelector('#stations').addEventListener('change', () => {
+document.querySelector('#stationslist').addEventListener('change', () => {
 	PassesPerStation(
-		document.querySelector('#stations').value,
+		document.querySelector('#stationslist').value,
 		picker.getStartDate().format('YYYYMMDD'),
 		picker.getEndDate().format('YYYYMMDD')
 	);
@@ -119,8 +119,6 @@ const PassesPerStation = async (station, datefrom, dateto) => {
 
 		let passesList = response.data.PassesList;
 
-		
-
 		let div = document.querySelector('#passesperstation');
 		div.innerHTML = '';
 		let table = document.createElement('table');
@@ -143,7 +141,7 @@ const PassesPerStation = async (station, datefrom, dateto) => {
 		let tableData = document.createElement('tbody');
 		let passes = [];
 		allOperators.map((op) => passes.push({ op: op.op_name, sum: 0 }));
-		
+
 		passesList.forEach((pass) => {
 			let row = document.createElement('tr');
 			row.innerHTML = `
@@ -258,7 +256,7 @@ const PassesAnalysis = async (op1, op2, datefrom, dateto) => {
 		</thead>`;
 
 		let tableData = document.createElement('tbody');
-		
+
 		passesList.forEach((pass) => {
 			let row = document.createElement('tr');
 			row.innerHTML = `
@@ -279,7 +277,7 @@ const PassesAnalysis = async (op1, op2, datefrom, dateto) => {
 	} catch (error) {
 		console.log(error);
 	}
-}
+};
 
 const loadData = async (current, datefrom, dateto) => {
 	try {
@@ -309,7 +307,20 @@ const loadData = async (current, datefrom, dateto) => {
 			stationNames.push(st.st_name);
 		});
 
-		let stationList = document.querySelector('#stations');
+		let otherOperatorsList = document.querySelector('#otheroperators');
+		let selection = otherOperatorsList.value;
+		otherOperatorsList.innerHTML = '';
+		operators.forEach((op) => {
+			let opt = document.createElement('option');
+			opt.value = op.op_name;
+			opt.innerHTML = op.op_name.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
+				return key.toUpperCase();
+			});
+			if (selection != '' && opt.value == selection) opt.selected = true;
+			otherOperatorsList.appendChild(opt);
+		});
+
+		let stationList = document.querySelector('#stationslist');
 		stationList.innerHTML = '';
 		stations.forEach((st) => {
 			let opt = document.createElement('option');
@@ -320,31 +331,19 @@ const loadData = async (current, datefrom, dateto) => {
 			stationList.appendChild(opt);
 		});
 
-		PassesPerStation(document.querySelector('#stations').value, datefrom, dateto);
-
-		let otherOperatorsList =  document.querySelector('#otheroperators');
-
-		if (otherOperatorsList.value == '' || otherOperatorsList.value == list.value) {
-			otherOperatorsList.innerHTML = '';
-			operators.forEach(op => {
-				let opt = document.createElement('option');
-				opt.value = op.op_name;
-				opt.innerHTML = op.op_name.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
-					return key.toUpperCase();
-				});
-				otherOperatorsList.appendChild(opt);
-			})
-		}
+		PassesPerStation(document.querySelector('#stationslist').value, datefrom, dateto);
 		PassesAnalysis(current, document.querySelector('#otheroperators').value, datefrom, dateto);
 
 		let home = [],
 			away = [];
 
 		let numOfPassesPerDay = [];
-		days.forEach(day => numOfPassesPerDay.push({
-			day: day,
-			sum: 0
-		}));
+		days.forEach((day) =>
+			numOfPassesPerDay.push({
+				day: day,
+				sum: 0
+			})
+		);
 
 		for (const st of stations) {
 			let passesPerStation = await axios({
@@ -357,20 +356,23 @@ const loadData = async (current, datefrom, dateto) => {
 
 			let sum = passesPerStation.data.NumberOfPasses;
 			let numOfHome = 0;
-			passesPerStation.data.PassesList.forEach(pass => {
+			passesPerStation.data.PassesList.forEach((pass) => {
 				if (pass.PassType == 'home') numOfHome++;
 
-				numOfPassesPerDay.forEach(d => {
-					if (datesAreOnSameDay(d.day, moment(pass.PassTimeStamp, 'YYYY-MM-DD HH:mm:ss').toDate()))
+				numOfPassesPerDay.forEach((d) => {
+					if (
+						datesAreOnSameDay(
+							d.day,
+							moment(pass.PassTimeStamp, 'YYYY-MM-DD HH:mm:ss').toDate()
+						)
+					)
 						d.sum++;
 				});
-			})
+			});
 
 			home.push(numOfHome);
 			away.push(sum - numOfHome);
 		}
-
-		console.log(numOfPassesPerDay);
 
 		let passesCosts = await Promise.all(
 			operators.map(async (op) => {
@@ -424,7 +426,7 @@ const loadData = async (current, datefrom, dateto) => {
 		if (chargesGraph) chargesGraph.destroy();
 		if (totalPie) totalPie.destroy();
 		if (totalGraph) totalGraph.destroy();
-		if (c3) c3.destroy();
+		if (passesGraph) passesGraph.destroy();
 		if (passesPerDayGraph) passesPerDayGraph.destroy();
 		chargesGraph = new Chart(document.getElementById('chargesGraph'), {
 			type: 'bar',
@@ -486,7 +488,7 @@ const loadData = async (current, datefrom, dateto) => {
 			}
 		});
 
-		c3 = new Chart(document.getElementById('area-3'), {
+		passesGraph = new Chart(document.getElementById('homeawaypasses'), {
 			type: 'bar',
 			data: {
 				labels: stationNames.map((st) =>
@@ -512,8 +514,6 @@ const loadData = async (current, datefrom, dateto) => {
 			options: {
 				maintainAspectRatio: false,
 				indexAxis: 'x',
-				// Elements options apply to all of the options unless overridden in a dataset
-				// In this case, we are setting the border of each horizontal bar to be 2px wide
 				elements: {
 					bar: {
 						borderWidth: 1
@@ -535,11 +535,11 @@ const loadData = async (current, datefrom, dateto) => {
 		passesPerDayGraph = new Chart(document.getElementById('passesperday'), {
 			type: 'line',
 			data: {
-				labels: numOfPassesPerDay.map(n => moment(n.day).format('YYYY-MM-DD')),
+				labels: numOfPassesPerDay.map((n) => moment(n.day).format('YYYY-MM-DD')),
 				datasets: [
 					{
-						label: 'Dataset 1',
-						data: numOfPassesPerDay.map(n => n.sum),
+						label: 'Number of Passes',
+						data: numOfPassesPerDay.map((n) => n.sum),
 						borderColor: 'rgba(54, 162, 235)',
 						backgroundColor: 'rgba(54, 162, 235, 0.2)',
 						cubicInterpolationMode: 'monotone',
@@ -547,22 +547,22 @@ const loadData = async (current, datefrom, dateto) => {
 					}
 				]
 			},
-			
+
 			options: {
 				maintainAspectRatio: false,
-			  responsive: true,
-			  plugins: {
-				legend: {
-				  position: 'top',
-				  display: false
-				},
-				title: {
-				  display: true,
-				  text: 'Passes per Day'
+				responsive: true,
+				plugins: {
+					legend: {
+						position: 'top',
+						display: false
+					},
+					title: {
+						display: true,
+						text: 'Passes per Day'
+					}
 				}
-			  }
-			},
-		  });
+			}
+		});
 	} catch (error) {
 		if (error.response) {
 			if (error.response.status === 402)
