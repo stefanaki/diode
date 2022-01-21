@@ -296,8 +296,6 @@ const loadData = async (current, datefrom, dateto) => {
 			}
 		});
 
-		unhide();
-
 		chargesBy = chargesBy.data;
 		operators = allOperators.filter((op) => op.op_name !== current);
 
@@ -386,6 +384,8 @@ const loadData = async (current, datefrom, dateto) => {
 				return passescost.data;
 			})
 		);
+
+		unhide();
 
 		let incomes = chargesBy.PPOList.map((el) => el.PassesCost);
 		let debts = passesCosts.map((el) => el.PassesCost);
