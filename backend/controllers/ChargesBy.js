@@ -5,7 +5,7 @@ const sendResponse = require('../utilities/sendFormattedResponse');
 module.exports = async (req, res) => {
 	const { op_ID, date_from, date_to } = req.params;
 	const format = 'YYYY-MM-DD HH:mm:ss';
-	const dateTimeNow = moment().format(format);
+	const dateTimeNow = req.dateTimeNow;
 
 	const query = `
         SELECT D.VisitingOperator, count(*) AS NumberOfPasses, sum(D.charge) AS PassesCost 

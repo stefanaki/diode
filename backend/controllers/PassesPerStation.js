@@ -5,7 +5,7 @@ const sendResponse = require('../utilities/sendFormattedResponse');
 module.exports = async (req, res) => {
 	const { stationID, date_from, date_to } = req.params;
 	const format = 'YYYY-MM-DD HH:mm:ss';
-	const dateTimeNow = moment().format(format);
+	const dateTimeNow = req.dateTimeNow;
 
 	// Fetch operator name query
 	const operatorQuery = `SELECT st_name, op_name FROM stations WHERE st_id = ?`;

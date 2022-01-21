@@ -5,7 +5,7 @@ const sendResponse = require('../utilities/sendFormattedResponse');
 module.exports = async (req, res) => {
 	const { op1_ID, op2_ID, date_from, date_to } = req.params;
 	const format = 'YYYY-MM-DD HH:mm:ss';
-	const dateTimeNow = moment().format(format);
+	const dateTimeNow = req.dateTimeNow;
 
 	if (op1_ID == op2_ID) {
 		return sendResponse(req, res, 400, {
