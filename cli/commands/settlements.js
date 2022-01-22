@@ -69,13 +69,14 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
 				headers: {
 					'X-OBSERVATORY-AUTH': token
 				},
+				params: { format },
 				httpsAgent: new require('https').Agent({ rejectUnauthorized: false })
 			});
 
 			const resData =
 				format === 'json'
 					? JSON.stringify(listSettlements.data, null, 4)
-					: passesAnalysis.data;
+					: listSettlements.data;
 
 			const filename = `settlements_${moment(datefrom, 'YYYYMMDD').format(
 				'YYYY-MM-DD'

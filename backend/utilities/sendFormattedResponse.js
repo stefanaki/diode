@@ -18,8 +18,7 @@ module.exports = (req, res, status, data) => {
 			}
 		}
 
-		let dataArray = parse(data);
-		res.attachment('response_data.csv').send(dataArray);
+		res.attachment('response_data.csv').send(parse(data));
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ message: 'Internal server error' });
