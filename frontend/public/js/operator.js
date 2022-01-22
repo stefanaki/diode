@@ -7,6 +7,7 @@ let chargesGraph,
 	passesGraph,
 	totalGraph,
 	totalPie,
+	mostVisitedStations,
 	passesPerDayGraph = null;
 
 const getDatesBetweenDates = (startDate, endDate) => {
@@ -74,12 +75,14 @@ document.querySelector('#otheroperators').addEventListener('change', () => {
 			document.querySelector('#operators').value,
 			document.querySelector('#otheroperators').value,
 			picker.getStartDate().format('YYYYMMDD'),
-			picker.getEndDate().format('YYYYMMDD')
+			picker.getEndDate().format('YYYYMMDD'),
+			stations
 		);
 	}
 });
 
 let allOperators = [];
+let stations = [];
 (async () => {
 	try {
 		allOperators = await axios({
@@ -223,7 +226,7 @@ const PassesPerStation = async (station, datefrom, dateto) => {
 	}
 };
 
-const PassesAnalysis = async (op1, op2, datefrom, dateto) => {
+const PassesAnalysis = async (op1, op2, datefrom, dateto, stations) => {
 	console.log(`executing analysis for ${op1} ${op2} ${datefrom} ${dateto}`);
 
 	try {
@@ -256,7 +259,9 @@ const PassesAnalysis = async (op1, op2, datefrom, dateto) => {
 		</thead>`;
 
 		let tableData = document.createElement('tbody');
-
+		let graphData = stations.map((st) => {
+			return { id: st.st_id, name: st.st_name, sum: 0 };
+		});
 		passesList.forEach((pass) => {
 			let row = document.createElement('tr');
 			row.innerHTML = `
@@ -268,12 +273,51 @@ const PassesAnalysis = async (op1, op2, datefrom, dateto) => {
 				<td class="text-end">${(Math.round(pass.Charge * 100) / 100).toFixed(2)}</td>
 			`;
 			tableData.appendChild(row);
+
+			graphData.find((st) => st.id === pass.StationID).sum++;
 		});
+
 		table.appendChild(tableData);
-
 		div.appendChild(table);
-
 		$('#tbl2').DataTable();
+
+		if (mostVisitedStations) mostVisitedStations.destroy();
+		mostVisitedStations = new Chart(document.querySelector('#mostvisitedstations'), {
+			type: 'bar',
+			data: {
+				labels: graphData.map((st) =>
+					st.name.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
+						return key.toUpperCase();
+					})
+				),
+				datasets: [
+					{
+						label: 'Station Passes',
+						data: graphData.map((st) => st.sum),
+						borderColor: 'rgba(54, 162, 235)',
+						backgroundColor: 'rgba(54, 162, 235, 0.2)'
+					}
+				]
+			},
+			options: {
+				elements: {
+					bar: {
+						borderWidth: 1
+					}
+				},
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: false
+					},
+					title: {
+						display: true,
+						text: 'Pass Events per Tag Provider'
+					}
+				}
+			}
+		});
 	} catch (error) {
 		console.log(error);
 	}
@@ -281,7 +325,7 @@ const PassesAnalysis = async (op1, op2, datefrom, dateto) => {
 
 const loadData = async (current, datefrom, dateto) => {
 	try {
-		let stations = await axios({
+		stations = await axios({
 			url: `https://localhost:9103/interoperability/api/auxiliary/getstations/${current}`,
 			method: 'get',
 			headers: {
@@ -304,6 +348,8 @@ const loadData = async (current, datefrom, dateto) => {
 		stations.forEach((st) => {
 			stationNames.push(st.st_name);
 		});
+
+		console.log(stations);
 
 		let otherOperatorsList = document.querySelector('#otheroperators');
 		let selection = otherOperatorsList.value;
@@ -330,7 +376,13 @@ const loadData = async (current, datefrom, dateto) => {
 		});
 
 		PassesPerStation(document.querySelector('#stationslist').value, datefrom, dateto);
-		PassesAnalysis(current, document.querySelector('#otheroperators').value, datefrom, dateto);
+		PassesAnalysis(
+			current,
+			document.querySelector('#otheroperators').value,
+			datefrom,
+			dateto,
+			stations
+		);
 
 		let home = [],
 			away = [];
@@ -357,15 +409,12 @@ const loadData = async (current, datefrom, dateto) => {
 			passesPerStation.data.PassesList.forEach((pass) => {
 				if (pass.PassType == 'home') numOfHome++;
 
-				numOfPassesPerDay.forEach((d) => {
-					if (
-						datesAreOnSameDay(
-							d.day,
-							moment(pass.PassTimeStamp, 'YYYY-MM-DD HH:mm:ss').toDate()
-						)
+				numOfPassesPerDay.find((d) =>
+					datesAreOnSameDay(
+						d.day,
+						moment(pass.PassTimeStamp, 'YYYY-MM-DD HH:mm:ss').toDate()
 					)
-						d.sum++;
-				});
+				).sum++;
 			});
 
 			home.push(numOfHome);
