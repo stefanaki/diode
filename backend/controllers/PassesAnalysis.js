@@ -57,6 +57,11 @@ module.exports = async (req, res) => {
 				date_to
 			]);
 
+			if (!queryResult[0][0])
+				return sendResponse(req, res, 402, {
+					message: 'No data for specified operators and time period'
+				});
+
 			// Parse result as JS object, compute total length, append PassIndex field
 			let queryResultList = JSON.parse(JSON.stringify(queryResult));
 			let i = 0;

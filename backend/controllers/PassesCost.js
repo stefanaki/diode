@@ -25,13 +25,17 @@ module.exports = async (req, res) => {
 	try {
 		const connection = await pool.getConnection();
 		try {
-			const queryRes = await connection.query(query, [op1_ID, op2_ID, date_from, date_to]);
+			const checkQuery = await connection.query(
+				'SELECT * FROM operators WHERE op_name = ? OR op_name = ?',
+				[op1_ID, op2_ID]
+			);
 
-			if (!queryRes[0][0]) {
+			if (!checkQuery[0][1])
 				return sendResponse(req, res, 400, {
-					message: 'Bad request: Invalid operator ID'
+					message: `Invalid operator ID's`
 				});
-			}
+
+			const queryRes = await connection.query(query, [op1_ID, op2_ID, date_from, date_to]);
 
 			sendResponse(req, res, 200, {
 				op1_ID: op1_ID,
@@ -40,7 +44,8 @@ module.exports = async (req, res) => {
 				PeriodFrom: moment(date_from).format(format),
 				PeriodTo: moment(date_to).format(format),
 				NumberOfPasses: queryRes[0][0].NumberOfPasses,
-				PassesCost: parseFloat(queryRes[0][0].PassesCost)
+				PassesCost:
+					queryRes[0][0].PassesCost !== null ? parseFloat(queryRes[0][0].PassesCost) : 0
 			});
 		} catch (error) {
 			console.log(error);

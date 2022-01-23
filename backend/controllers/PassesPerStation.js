@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
 
 			if (!queryResult[0][0]) {
 				return sendResponse(req, res, 402, {
-					message: 'No data for specified station and time period.'
+					message: 'No data for specified station and time period'
 				});
 			}
 
