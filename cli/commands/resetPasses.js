@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const errorHandler = require('../utilities/errorHandler');
 
 module.exports = async () => {
 	try {
@@ -19,9 +20,6 @@ module.exports = async () => {
 
 		console.log(resetPasses.data.status);
 	} catch (error) {
-		if (error.response && error.response.data && error.response.data.status) {
-			return console.log(error.response.data.status);
-		}
-		console.log('Could not hit API');
+		errorHandler(error, null);
 	}
 };

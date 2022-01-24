@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const errorHandler = require('../utilities/errorHandler');
 
 module.exports = async ({ username, passw }) => {
 	try {
@@ -18,9 +19,6 @@ module.exports = async ({ username, passw }) => {
 		fs.writeFileSync('.token', token);
 		console.log(`Welcome, ${username}. Type se2108 --help to display available commands.`);
 	} catch (error) {
-		if (error.response && error.response.data && error.response.data.message) {
-			return console.log(error.response.data.message);
-		}
-		console.log('Could not hit API');
+		errorHandler(error, null);
 	}
 };

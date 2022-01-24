@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const errorHandler = require('../utilities/errorHandler');
 
 module.exports = async () => {
 	try {
@@ -20,9 +21,6 @@ module.exports = async () => {
 		fs.unlinkSync('.token');
 		console.log(`Log out successful`);
 	} catch (error) {
-		if (error.response && error.response.data && error.response.data.message) {
-			return console.log(error.response.data.message);
-		}
-		console.log('Could not hit API');
+		errorHandler(error, null);
 	}
 };

@@ -1,6 +1,7 @@
 const axios = require('axios');
 const moment = require('moment');
 const fs = require('fs');
+const errorHandler = require('../utilities/errorHandler');
 
 module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dateto, format }) => {
 	if (verify && list && create)
@@ -85,9 +86,6 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
 			console.log(`Created data file ${filename}`);
 		}
 	} catch (error) {
-		if (error.response && error.response.data && error.response.data.message) {
-			return console.log(error.response.data.message);
-		}
-		console.log('Could not hit API');
+		errorHandler(error, format);
 	}
 };

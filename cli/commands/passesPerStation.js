@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fs = require('fs');
 const moment = require('moment');
+const errorHandler = require('../utilities/errorHandler');
 
 module.exports = async ({ station, datefrom, dateto, format }) => {
 	if (!(format === 'json' || format === 'csv'))
@@ -33,9 +34,6 @@ module.exports = async ({ station, datefrom, dateto, format }) => {
 		fs.writeFileSync(filename, resData);
 		console.log(`Created data file ${filename}`);
 	} catch (error) {
-		if (error.response && error.response.data && error.response.data.message) {
-			return console.log(error.response.data.message);
-		}
-		console.log('Could not hit API');
+		errorHandler(error, format);
 	}
 };

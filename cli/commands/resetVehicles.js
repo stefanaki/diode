@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const errorHandler = require('../utilities/errorHandler');
 
 module.exports = async () => {
 	try {
@@ -19,9 +20,7 @@ module.exports = async () => {
 
 		console.log(resetVehicles.data.status);
 	} catch (error) {
-		if (error.response && error.response.data && error.response.data.status) {
-			return console.log(error.response.data.status);
-		}
+		errorHandler(error, null);
 		console.log('Make sure you have deleted all pass events from the database');
 	}
 };
