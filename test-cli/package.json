@@ -3,6 +3,8 @@
 	"version": "1.0.0",
 	"description": "Diode CLI Tests",
 	"main": "test.js",
+	"preferGlobal": true,
+	"bin": "./test.js",
 	"scripts": {
 		"test": "node ."
 	},
