@@ -14,11 +14,11 @@ module.exports = (req, res, status, data) => {
 					}
 				}
 
-				return res.attachment('response_data.csv').send(parse(member));
+				return res.status(status).attachment('response_data.csv').send(parse(member));
 			}
 		}
 
-		res.attachment('response_data.csv').send(parse(data));
+		res.status(status).attachment('response_data.csv').send(parse(data));
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ message: 'Internal server error' });
