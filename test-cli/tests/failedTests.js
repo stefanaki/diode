@@ -59,6 +59,11 @@ module.exports = async ({
 			cmd: `se2108 settlements --list --datefrom 20200101 --dateto 20190101 --format json`,
 			out: `Bad request: date_from should be smaller than date_to\n`,
 			file: null
+		},
+		{
+			cmd: `se2108 passescost --op1 aodos --op2 egnatia --datefrom 20200101 --dateto 2021-01-01 --format json`,
+			out: `Bad request: Invalid date formats\n`,
+			file: null	
 		}
 	];
 
