@@ -106,7 +106,12 @@ let stations = [];
 			list.appendChild(selection);
 		});
 	} catch (error) {
-		console.log(error);
+		localStorage.setItem(
+			'msg',
+			JSON.stringify({ msg: 'Session expired, please log in again', type: 'warning' })
+		);
+		localStorage.removeItem('auth_token');
+		window.location.replace('http://localhost:8000/login');
 	}
 })();
 
