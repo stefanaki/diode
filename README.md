@@ -29,13 +29,16 @@ A user authentication system using jwt is also utilized for different types of u
 -   Frontend
     -   Node.js & EJS Template Engine
 
-Other libraries used:
+Other libraries and tools:
 
+-   [Docker](#deployment-instructions-on-localhost)
 -   Moment.js for date parsing and formatting
 -   Axios for executing HTTP requests
 -   JSON Web Token for user authentication
 -   bcryptjs for password encryption
 -   Chart.js for data visualization in the frontend
+-   Bootstrap CSS
+-   jQuery Datatables
 
 ## Deployment Instructions on localhost
 
