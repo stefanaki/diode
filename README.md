@@ -23,11 +23,19 @@ A user authentication system using jwt is also utilized for different types of u
 -   API / Backend
     -   MySQL
     -   Redis
-    -   NodeJS & Express
+    -   Node.js & Express
 -   CLI
-    -   NodeJS & CommanderJS
+    -   Node.js & Commander.js
 -   Frontend
-    -   NodeJS & EJS Template Engine
+    -   Node.js & EJS Template Engine
+
+Other libraries used:
+
+-   Moment.js for date parsing and formatting
+-   Axios for executing HTTP requests
+-   JSON Web Token for user authentication
+-   bcryptjs for password encryption
+-   Chart.js for data visualization in the frontend
 
 ## Deployment Instructions on localhost
 
@@ -41,14 +49,14 @@ In order to get the all the components of the application up and running on your
     $ docker compose build
     $ docker compose up
     ```
-4. Follow the instructions provided for the CLI and the testing tool in their respective directories
+4. Follow the instructions provided for the [CLI](cli/) and the [testing tool](test-cli) in their respective directories
 5. On success, the following paths should be exposed to the user:
     - API: https://localhost:9103/interoperability/api
     - Frontend: http://localhost:8000
 
 ## Documentation
 
-The directory `doc` consists of the documentation files of the project.
+The directory [`doc`](doc/) consists of the documentation files of the project.
 
 -   Visual Paradigm UML diagrams
 -   Postman API documentation
@@ -56,7 +64,7 @@ The directory `doc` consists of the documentation files of the project.
 
 ## Testing
 
-In the API Postman documentation, as well as in the `test-backend` directory, there are available unit and functional testing scripts for the backend service. Furthermore, in the `test-cli` directory, there is a command line application that automatically generates and runs functional tests for the CLI.
+In the API Postman documentation, as well as in the [`test-backend`](test-backend/) directory, there are available unit and functional testing scripts for the backend service. Furthermore, in the [`test-cli`](test-cli/) directory, there is a command line application that automatically generates and runs functional tests for the CLI.
 
 ## Partners
 
