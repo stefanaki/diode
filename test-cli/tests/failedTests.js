@@ -6,9 +6,7 @@ String.prototype.trim = function () {
 	return this.replace(/^\s+|\s+$/g, '');
 };
 
-module.exports = async ({
-	rounds
-}) => {
+module.exports = async ({ rounds }) => {
 	let commands = [
 		{
 			cmd: 'se2108 login --username admin --passw wrongpassword',
@@ -21,49 +19,54 @@ module.exports = async ({
 			file: '.token'
 		},
 		{
-			cmd: `se2108 passesperstation --station AI01 --datefrom 20200101 --dateto 20210101 --format json`,
+			cmd: `se2108 passesperstation --station AI01 --datefrom 20200101 --dateto 20210101 --format csv`,
 			out: `Bad request: Invalid stationID\n`,
 			file: null
 		},
 		{
-			cmd: `se2108 passesanalysis --op1 aodos --op2 aodos --datefrom 20200101 --dateto 20210101 --format json`,
+			cmd: `se2108 passesanalysis --op1 aodos --op2 aodos --datefrom 20200101 --dateto 20210101 --format csv`,
 			out: `Bad request: The 2 Operators IDs are the same\n`,
-			file: null 
+			file: null
 		},
 		{
-			cmd: `se2108 passesanalysis --op1 aodo --op2 egnatia --datefrom 20200101 --dateto 20210101 --format json`,
+			cmd: `se2108 passesanalysis --op1 aodo --op2 egnatia --datefrom 20200101 --dateto 20210101 --format csv`,
 			out: `Bad request: Invalid Operator ID\n`,
 			file: null
 		},
 		{
-			cmd: `se2108 chargesby --op1 aodo --datefrom 20200101 --dateto 20210101 --format json`,
+			cmd: `se2108 chargesby --op1 aodo --datefrom 20200101 --dateto 20210101 --format csv`,
 			out: `Bad request: Invalid Operator ID\n`,
 			file: null
 		},
 		{
-			cmd: `se2108 passescost --op1 aodos --op2 aodos --datefrom 20200101 --dateto 20210101 --format json`,
+			cmd: `se2108 passescost --op1 aodos --op2 aodos --datefrom 20200101 --dateto 20210101 --format csv`,
 			out: `Bad request: The 2 Operators IDs are the same\n`,
-			file: null	
+			file: null
 		},
 		{
-			cmd: `se2108 passescost --op1 aodos --op2 egnati --datefrom 20200101 --dateto 20210101 --format json`,
+			cmd: `se2108 passescost --op1 aodos --op2 egnati --datefrom 20200101 --dateto 20210101 --format csv`,
 			out: `Invalid operator ID's\n`,
-			file: null	
+			file: null
 		},
 		{
-			cmd: `se2108 passescost --op1 aodos --op2 egnatia --datefrom 20200101 --dateto 20190101 --format json`,
-			out: `Bad request: date_from should be smaller than date_to\n`,
-			file: null	
-		},
-		{
-			cmd: `se2108 settlements --list --datefrom 20200101 --dateto 20190101 --format json`,
+			cmd: `se2108 passescost --op1 aodos --op2 egnatia --datefrom 20200101 --dateto 20190101 --format csv`,
 			out: `Bad request: date_from should be smaller than date_to\n`,
 			file: null
 		},
 		{
-			cmd: `se2108 passescost --op1 aodos --op2 egnatia --datefrom 20200101 --dateto 2021-01-01 --format json`,
+			cmd: `se2108 settlements --list --datefrom 20200101 --dateto 20190101 --format csv`,
+			out: `Bad request: date_from should be smaller than date_to\n`,
+			file: null
+		},
+		{
+			cmd: `se2108 passescost --op1 aodos --op2 egnatia --datefrom 20200101 --dateto 2021-01-01 --format csv`,
 			out: `Bad request: Invalid date formats\n`,
-			file: null	
+			file: null
+		},
+		{
+			cmd: `se2108 logout`,
+			out: `Log out successful\n`,
+			file: null
 		}
 	];
 
@@ -79,8 +82,13 @@ module.exports = async ({
 		for (const c of commands) {
 			console.log(chalk.blue('Executing command: \t') + c.cmd);
 			let stdout = cp.execSync(c.cmd).toString();
-			if (stdout === c.out) console.log('Standard output: \t' + chalk.green('OK ✓'));
-			else {
+			if (stdout === c.out) {
+				c.out
+					.trim()
+					.match(/[^\r\n]+/g)
+					.forEach((line) => console.log(`\t\t\t${line}`));
+				console.log('Standard output: \t' + chalk.green('OK ✓'));
+			} else {
 				console.log('Standard output: \t' + chalk.red('Not OK ✗'));
 				console.log('Expected output: \t' + c.out.trim());
 				console.log('CLI response: \t\t' + stdout.trim());
@@ -105,7 +113,3 @@ module.exports = async ({
 	console.log('Successful tests: ' + chalk.green(numOfTests - failedTests));
 	console.log('Failed tests: ' + chalk.red(failedTests));
 };
-
-
-
-

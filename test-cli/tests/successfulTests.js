@@ -107,8 +107,13 @@ module.exports = async ({
 		for (const c of commands) {
 			console.log(chalk.blue('Executing command: \t') + c.cmd);
 			let stdout = cp.execSync(c.cmd).toString();
-			if (stdout === c.out) console.log('Standard output: \t' + chalk.green('OK ✓'));
-			else {
+			if (stdout === c.out) {
+				c.out
+					.trim()
+					.match(/[^\r\n]+/g)
+					.forEach((line) => console.log(`\t\t\t${line}`));
+				console.log('Standard output: \t' + chalk.green('OK ✓'));
+			} else {
 				console.log('Standard output: \t' + chalk.red('Not OK ✗'));
 				console.log('Expected output: \t' + c.out.trim());
 				console.log('CLI response: \t\t' + stdout.trim());
