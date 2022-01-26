@@ -6,10 +6,12 @@ module.exports = async (req, res) => {
 	const { date_from, date_to } = req.params;
 	const format = 'YYYY-MM-DD';
 
-	const Query = `SELECT operator_credited as OperatorCredited, operator_debited as OperatorDebited, 
-    date_from as DateFrom, date_to as DateTo, amount as Amount, status as Status
-    FROM settlements 
-    WHERE date_from >= ? AND date_to <= ? `;
+	const Query = `
+		SELECT set_id AS SettlementID, operator_credited AS OperatorCredited,
+		operator_debited AS OperatorDebited, date_from AS DateFrom,
+		date_to AS DateTo, amount AS Amount, status AS Status
+		FROM settlements 
+		WHERE date_from >= ? AND date_to <= ? `;
 
 	try {
 		const connection = await pool.getConnection();
