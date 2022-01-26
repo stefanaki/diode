@@ -38,7 +38,7 @@ const loadSettlements = async (from, to) => {
 		table.innerHTML = `
 		<thead class="table-light">
 			<tr>
-				<th class="text-end">Index</th>
+				<th class="text-end">ID</th>
 				<th>Operator Credited</th>
 				<th>Operator Debited</th>
 				<th>From</th>
@@ -48,13 +48,12 @@ const loadSettlements = async (from, to) => {
 			</tr>
 		</thead>`;
 
-		let i = 1;
 		let tableData = document.createElement('tbody');
 		settList.forEach((settlement) => {
 			let row = document.createElement('tr');
 			if (settlement.Status === 1) row.classList.add('table-primary');
 			row.innerHTML = `
-				<td class="text-end">${i++}</td>
+				<td class="text-end">${settlement.SettlementID}</td>
 				<td>${settlement.OperatorCredited.replace(/_/g, ' ').replace(/(?: |\b)(\w)/g, function (key) {
 					return key.toUpperCase();
 				})}</td>
