@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<%- include('./partials/head'); %>
+	<script src="/js/redirect.js"></script>
+	<script defer src="/js/alert.js"></script>
+	<script defer src="/js/logout.js"></script>
+	<script defer src="/js/chart.min.js"></script>
+	<script defer src="/js/settlements.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+
+	<body>
+		<div id="alerts" class="d-none"></div>
+		<%- include('./partials/navbar'); %>
+
+		<div class="my-container border">
+			<h2 class="m-3 text-center">Settlements</h2>
+
+			<div class="d-flex flex-column justify-content-between align-items-center mt-3">
+				<div class="mb-3" id="litepicker"></div>
+			</div>
+
+			<div style="height: 400px; width: 100%">
+				<canvas id="settlementsGraph"></canvas>
+			</div>
+
+			<div id="settlements" class="p-3"></div>
+		</div>
+		<%- include('./partials/footer'); %>
+	</body>
+</html>

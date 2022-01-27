@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+	<%- include('./partials/head'); %>
+	<script defer src="/js/alert.js"></script>
+	<script defer src="/js/login.js"></script>
+	<body class="login-body">
+		<div class="login-container">
+			<h1 class="h2 align-self-center d-inline mb-3"><b>Diode Dashboard</b></h1>
+
+			<main class="form-signin d-flex flex-column">
+				<form class="d-flex flex-column">
+					<h1 class="h3 mb-3 fw-normal">Please log in</h1>
+
+					<div class="form-floating">
+						<input
+							type="text"
+							class="form-control"
+							id="usernameInput"
+							placeholder="username"
+							required
+						/>
+						<label for="floatingInput">Username</label>
+					</div>
+					<div class="form-floating">
+						<input
+							type="password"
+							class="form-control"
+							id="passwordInput"
+							placeholder="Password"
+							required
+						/>
+						<label for="floatingPassword">Password</label>
+					</div>
+
+					<div class="checkbox mb-3 align-self-center">
+						<label>
+							<input class="form-check-input" type="checkbox" value="remember-me" />
+							Remember me
+						</label>
+					</div>
+					<button class="w-100 btn btn-lg btn-primary" id="submitBtn" type="submit">
+						Log in
+					</button>
+					<p class="mt-5 mb-3 align-self-end">
+						Diode
+						<span class="text-muted">softeng21-08</span>
+					</p>
+				</form>
+			</main>
+		</div>
+		<div id="alerts"></div>
+	</body>
+</html>

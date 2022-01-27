@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken');
 const redisClient = require('../config/redis');
 const sendResponse = require('../utilities/sendFormattedResponse');
 
-// Parameterized middleware for authenticating admins & normal users
-module.exports = (admin = false) => {
+// Parameterized middleware for identifying admins & other user types
+module.exports = (userType) => {
     return async (req, res, next) => {
         const token = req.header('X-OBSERVATORY-AUTH');
 
@@ -23,9 +23,15 @@ module.exports = (admin = false) => {
         try {
             const payload = jwt.verify(token, process.env.TOKEN_KEY);
 
-            if (admin && payload.type !== 'admin') {
+            if (userType === 'admin' && payload.type !== 'admin') {
                 return sendResponse(req, res, 401, {
                     message: 'You need administrator privileges to execute this endpoint'
+                });
+            }
+
+            if (userType === 'bank' && payload.type !== 'bank') {
+                return sendResponse(req, res, 401, {
+                    message: 'You need payment service provider privileges to execute this endpoint'
                 });
             }
             req.user = payload;

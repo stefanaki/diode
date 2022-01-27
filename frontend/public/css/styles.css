@@ -1,0 +1,105 @@
+html {
+	height: 100%;
+}
+
+body {
+	background-color: #f9f9f9;
+	height: fit-content;
+}
+
+.container {
+	background-color: #fff;
+	width: 100vw;
+	height: 100vh;
+}
+
+.login-body {
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: center;
+	background-color: #f9f9f9;
+	height: 100%;
+}
+
+.form-signin {
+	width: 100%;
+	max-width: 500px;
+	padding: 15px;
+	margin: auto;
+}
+
+.form-signin .checkbox {
+	font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+	z-index: 2;
+}
+
+.form-signin input[type='text'] {
+	margin-bottom: -1px;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.form-signin input[type='password'] {
+	margin-bottom: 10px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.login-container {
+	width: 100%;
+	margin: auto auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+#alerts {
+	position: absolute;
+	height: 150px;
+	width: 500px;
+	padding: 15px auto;
+	overflow-y: hidden;
+	z-index: 999;
+	left: 0;
+	right: 0;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.my-alert {
+	margin: 3px;
+	transition: 0.3s;
+}
+
+.nav-item .active {
+	width: fit-content;
+}
+
+.table-container {
+	padding: 10px;
+}
+
+.my-container {
+	max-width: 1400px;
+	padding: 0 10px;
+	margin-bottom: 10px;
+	margin: 0 auto;
+	background-color: white;
+	border-radius: 0 0 10px 10px;
+}
+
+:root {
+	--litepicker-is-start-color-bg: #3459e6;
+	--litepicker-is-end-color-bg: #3459e6;
+	--litepicker-button-prev-month-color-hover: #3459e6;
+	--litepicker-button-next-month-color-hover: #3459e6;
+	--litepicker-day-color-hover: #3459e6;
+	--litepicker-is-in-range-color: #c2cdf7;
+	--litepicker-is-today-color: #e77477;
+	--litepicker-container-months-color-bg: #fbfbfb;
+}
