@@ -1,3 +1,3 @@
 # test-backend
 
-Σε αυτόν τον κατάλογο υπάρχουν τα scripts που τρέξαμε στο Postman προκειμένου να ελέγξουμε την ορθότητα των λειτουργιών του API που κατασκευάσαμε. Τα συγκεκριμένα scripts ελέγχουν τόσο τον τύπο δεδομένων για κάθε πεδίο που επιστρέφεται στο response κάθε κλήσης, όσο και την ορθότητα των υπολογισμών του backend. Μπορείτε να τα χρησιμοποιήσετε εισάγοντας το Collection που περιέχεται στον κατάλογο `TL21-08/doc` στο Postman και εκτελώντας τα ενδεικτικά HTTP requests.
+The Postman API collection contains unit and functional testing scripts for the backend service.
