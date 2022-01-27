@@ -2,14 +2,14 @@
 
 ### Installation Instructions
 
-1. Get NodeJS
-2. Clone the codebase
-   `git clone https://github.com/ntua/TL21-08.git`
+1. Get Node.js
+2. Clone the codebase  
+   `$ git clone https://github.com/ntua/TL21-08.git`
 3. Install required packages and create symbolic link
     ```
-    cd TL21-08/cli
-    npm install
-    sudo npm link
+    $ cd TL21-08/cli
+    $ npm install
+    $ sudo npm link
     ```
 
 ### Correct Usage:

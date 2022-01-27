@@ -1,6 +1,6 @@
 # Back-end
 
-Στον κατάλογο `TL21-08/backend/routes` έχουν ορισθεί όλα τα endpoints που έχουμε εκτεθειμένα στους καταναλωτές του REST API της εφαρμογής. Με βάση το base URL `https://localhost:9103/interoperability/api` μπορεί κανείς να έχει πρόσβαση στα παρακάτω routes:
+In the directory `TL21-08/backend/routes` have been defined all the endpoints that are exposed to the consumers of the application's REST API. Using the base URL `https://localhost:9103/interoperability/api` user may execute the following endpoints:
 
 -   `PassesRoutes.js`
     -   `/PassesPerStation/:stationID/:date_from/:date_to`
@@ -15,5 +15,9 @@
 -   `AuthRoutes.js`
     -   `/login`
     -   `/logout`
+-   `SettlementRoutes.js`
+    -   `/GetSettlements/:date_from/:date_to`
+    -   `/CreateSettlement`
+    -   `/VerifySettlement`
 
-Περισσότερα για τη σωστή χρήση του API μπορείτε να διαβάσετε στο Postman documentation που βρίσκεται στον κατάλογο `TL21-08/doc`.
+Check out the [API documentation](../doc) for more.
