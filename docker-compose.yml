@@ -30,7 +30,7 @@ services:
         restart: unless-stopped
         volumes:
             - ./db:/var/lib/mysql:rw
-            - ./database/db-dump-v2.0/complete_dump_31-12-2021_.sql:/docker-entrypoint-initdb.d/0_init.sql:ro
+            - ./database/full_dump.sql:/docker-entrypoint-initdb.d/0_init.sql:ro
         ports:
             - 33060:3306
         expose:
