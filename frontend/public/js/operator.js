@@ -34,6 +34,7 @@ const picker = new Litepicker({
 	inlineMode: true,
 	setup: function (picker) {
 		picker.on('selected', function (date1, date2) {
+			date2.dateInstance.setDate(date2.dateInstance.getDate() + 1);
 			days = getDatesBetweenDates(date1.toJSDate(), date2.toJSDate());
 			loadData(
 				document.querySelector('#operators').value,
