@@ -37,6 +37,7 @@ submitButton.addEventListener('click', async (e) => {
 			});
 
 			localStorage.setItem('auth_token', res.data.token);
+			localStorage.setItem('user_type', res.data.userType);
 
 			submitButton.classList.remove('btn-primary');
 			submitButton.classList.add('btn-success');
