@@ -23,8 +23,7 @@ module.exports = async (req, res) => {
 		 ((operator_credited = ? AND operator_debited = ?) OR (operator_credited = ? AND operator_debited = ? )) 
 		 AND
 		 (date_from = ? AND date_to = ?)
-		 ) 
-		 
+		 ) 		 
         )`;
 
 	// Compute the amount of the settlement and who is credited and who is debited
@@ -70,11 +69,14 @@ module.exports = async (req, res) => {
 			let q1 = await connection.query(computequery, [op1_ID, op2_ID, date_from, date_to]); // how much money does op2 owes to op1
 			let q2 = await connection.query(computequery, [op2_ID, op1_ID, date_from, date_to]); // how much money does op1 owes to op2
 
-			let amount = Math.abs(q2[0][0].PassesCost - q1[0][0].PassesCost);
+			let pc1 = q1[0][0].PassesCost ? q1[0][0].PassesCost : 0;
+			let pc2 = q2[0][0].PassesCost ? q2[0][0].PassesCost : 0;
+
+			let amount = Math.abs(pc2 - pc1);
 			let status = 0;
 
 			let credited, debited;
-			if (q1[0][0].PassesCost < q2[0][0].PassesCost) {
+			if (pc1 > pc2) {
 				// op1 is debited and op2 is credited
 				credited = op2_ID;
 				debited = op1_ID;
@@ -87,7 +89,7 @@ module.exports = async (req, res) => {
 					status
 				]);
 			}
-			if (q1[0][0].PassesCost > q2[0][0].PassesCost) {
+			if (pc1 < pc2) {
 				// op2 is debited and op1 is credited
 				credited = op1_ID;
 				debited = op2_ID;
@@ -101,7 +103,7 @@ module.exports = async (req, res) => {
 				]);
 			}
 
-			if (q1[0][0].PassesCost == q2[0][0].PassesCost) {
+			if (pc1 == pc2) {
 				return sendResponse(req, res, 400, {
 					message: 'The settlement amount is zero'
 				});
