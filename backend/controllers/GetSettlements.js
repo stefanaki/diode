@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
 				totalsettlements++;
 				completed += settlement.Status == 1 ? 1 : 0;
 				settlement.DateFrom = moment(settlement.DateFrom).format(format);
-				settlement.DateTo = moment(settlement.DateTo).format(format);
+				settlement.DateTo = moment(settlement.DateTo).add(1, 'seconds').format(format);
 				settlement.Amount = parseFloat(settlement.Amount);
 			});
 
