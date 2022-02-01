@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
 		});
 	}
 
-	req.dateTimeNow = moment().add(2, 'hours').format('YYYY-MM-DD HH:mm:ss');
+	req.dateTimeNow = moment().format('YYYY-MM-DD HH:mm:ss');
 
 	return next();
 };
