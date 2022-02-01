@@ -54,29 +54,35 @@ const unhide = () => {
 
 document.querySelector('#operators').addEventListener('change', () => {
 	if (picker.getDate()) {
+		let to = picker.getEndDate();
+		to.dateInstance.setDate(to.dateInstance.getDate() + 1);
 		loadData(
 			document.querySelector('#operators').value,
 			picker.getStartDate().format('YYYYMMDD'),
-			picker.getEndDate().format('YYYYMMDD')
+			to.format('YYYYMMDD')
 		);
 	}
 });
 
 document.querySelector('#stationslist').addEventListener('change', () => {
+	let to = picker.getEndDate();
+	to.dateInstance.setDate(to.dateInstance.getDate() + 1);
 	PassesPerStation(
 		document.querySelector('#stationslist').value,
 		picker.getStartDate().format('YYYYMMDD'),
-		picker.getEndDate().format('YYYYMMDD')
+		to.format('YYYYMMDD')
 	);
 });
 
 document.querySelector('#otheroperators').addEventListener('change', () => {
 	if (picker.getDate()) {
+		let to = picker.getEndDate();
+		to.dateInstance.setDate(to.dateInstance.getDate() + 1);
 		PassesAnalysis(
 			document.querySelector('#operators').value,
 			document.querySelector('#otheroperators').value,
 			picker.getStartDate().format('YYYYMMDD'),
-			picker.getEndDate().format('YYYYMMDD'),
+			to.format('YYYYMMDD'),
 			stations
 		);
 	}
@@ -233,8 +239,6 @@ const PassesPerStation = async (station, datefrom, dateto) => {
 };
 
 const PassesAnalysis = async (op1, op2, datefrom, dateto, stations) => {
-	console.log(`executing analysis for ${op1} ${op2} ${datefrom} ${dateto}`);
-
 	try {
 		let response = await axios({
 			url: `https://localhost:9103/interoperability/api/PassesAnalysis/${op1}/${op2}/${datefrom}/${dateto}`,
