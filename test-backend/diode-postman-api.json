@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a116ca06-cbfe-44f1-9213-f02a7f52002a",
+		"_postman_id": "ce1f3c4a-b438-47c0-ba15-36289ba992b4",
 		"name": "Diode API",
 		"description": "DiodeIO RESTful API for Toll Station Interoperability Data\n\n## Base URL\nUse ```https://localhost:9103/interoperability/api/```for all your requests.\n\n## Date Formatting\nEvery endpoint that requires a date field must be populated with a date of the format ```YYYYMMDD```, otherwise the server will respond with an invalid date format error.\n\n## JSON & CSV Functionality\nEvery available endpoint can respond with either JSON or CSV format. You have to specify your desired response type in the query parameter ```format={json|csv}```. By default the API will respond with JSON.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -25,12 +25,15 @@
 									"pm.test(\"Response body is in correct format\", function () {",
 									"    pm.expect(responseJson.message).to.be.a('string');",
 									"    pm.expect(responseJson.token).to.be.a('string');",
+									"    pm.expect(responseJson.userType).to.be.a('string');",
 									"});",
 									"",
 									"pm.test(\"Response has correct values\", function() {",
 									"    pm.expect(responseJson.message).to.be.eql('Log in successful');",
+									"    pm.expect(responseJson.userType).to.be.eql('admin');",
 									"});",
-									""
+									"",
+									"pm.environment.set('auth_token', responseJson.token);"
 								],
 								"type": "text/javascript"
 							}
@@ -409,10 +412,6 @@
 										"type": "text"
 									}
 								],
-								"body": {
-									"mode": "formdata",
-									"formdata": []
-								},
 								"url": {
 									"raw": "{{base}}/admin/healthcheck",
 									"host": [
@@ -744,7 +743,7 @@
 							"query": [
 								{
 									"key": "",
-									"value": null,
+									"value": "",
 									"disabled": true
 								}
 							]
@@ -870,9 +869,9 @@
 									"pm.test(\"Response has correct values\", function() {",
 									"    pm.expect(responseJson.Station).to.be.eql('olympia_odos tolls station 02');",
 									"    pm.expect(responseJson.StationOperator).to.be.eql('olympia_odos');",
-									"    pm.expect(responseJson.PeriodFrom).to.be.eql('2021-01-09 00:00:00');",
-									"    pm.expect(responseJson.PeriodTo).to.be.eql('2021-07-09 00:00:00');",
-									"    pm.expect(responseJson.NumberOfPasses).to.be.eql(63);",
+									"    pm.expect(responseJson.PeriodFrom).to.be.eql('2021-07-01 00:00:00');",
+									"    pm.expect(responseJson.PeriodTo).to.be.eql('2021-08-01 00:00:00');",
+									"    pm.expect(responseJson.NumberOfPasses).to.be.eql(15);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -915,12 +914,12 @@
 								},
 								{
 									"key": "date_from",
-									"value": "20210109",
+									"value": "20210701",
 									"description": "Start of specified period"
 								},
 								{
 									"key": "date_to",
-									"value": "20210709",
+									"value": "20210801",
 									"description": "End of specified period"
 								}
 							]
@@ -1722,12 +1721,12 @@
 									"});",
 									"",
 									"pm.test(\"Response has correct values\", function() {",
-									"    pm.expect(responseJson.op1_ID).to.be.eql('aodos');",
-									"    pm.expect(responseJson.op2_ID).to.be.eql('egnatia');",
-									"    pm.expect(responseJson.PeriodFrom).to.be.eql('2021-01-01 00:00:00');",
-									"    pm.expect(responseJson.PeriodTo).to.be.eql('2021-10-20 00:00:00');",
-									"    pm.expect(responseJson.NumberOfPasses).to.be.eql(82);",
-									"    pm.expect(responseJson.PassesCost).to.be.eql(229.6);",
+									"    pm.expect(responseJson.op1_ID).to.be.eql('olympia_odos');",
+									"    pm.expect(responseJson.op2_ID).to.be.eql('kentriki_odos');",
+									"    pm.expect(responseJson.PeriodFrom).to.be.eql('2020-10-01 00:00:00');",
+									"    pm.expect(responseJson.PeriodTo).to.be.eql('2020-11-01 00:00:00');",
+									"    pm.expect(responseJson.NumberOfPasses).to.be.eql(7);",
+									"    pm.expect(responseJson.PassesCost).to.be.eql(13.8);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1765,22 +1764,22 @@
 							"variable": [
 								{
 									"key": "op_ID1",
-									"value": "aodos",
+									"value": "olympia_odos",
 									"description": "Operator ID 1"
 								},
 								{
 									"key": "op_ID2",
-									"value": "egnatia",
+									"value": "kentriki_odos",
 									"description": "Operator ID 2"
 								},
 								{
 									"key": "date_from",
-									"value": "20210101",
+									"value": "20201001",
 									"description": "Start of specified period"
 								},
 								{
 									"key": "date_to",
-									"value": "20211020",
+									"value": "20201101",
 									"description": "End of specified period"
 								}
 							]
@@ -1989,40 +1988,37 @@
 									"",
 									"let correctValues = [",
 									"  {",
+									"    VisitingOperator: \"aodos\",",
+									"    PassesCost: 7.8",
+									"  },",
+									"  {",
 									"    VisitingOperator: \"egnatia\",",
-									"    NumberOfPasses: 33,",
-									"    PassesCost: 92.4",
+									"    PassesCost: 9.65",
 									"  },",
 									"  {",
 									"    VisitingOperator: \"gefyra\",",
-									"    NumberOfPasses: 35,",
-									"    PassesCost: 98",
-									"  },",
-									"  {",
-									"    VisitingOperator: \"kentriki_odos\",",
-									"    NumberOfPasses: 34,",
-									"    PassesCost: 95.2",
+									"    PassesCost: 7.1",
 									"  },",
 									"  {",
 									"    VisitingOperator: \"moreas\",",
-									"    NumberOfPasses: 40,",
-									"    PassesCost: 112",
+									"    PassesCost: 1",
 									"  },",
 									"  {",
 									"    VisitingOperator: \"nea_odos\",",
-									"    NumberOfPasses: 37,",
-									"    PassesCost: 103.6",
+									"    PassesCost: 5.7",
 									"  },",
 									"  {",
 									"    VisitingOperator: \"olympia_odos\",",
-									"    NumberOfPasses: 27,",
-									"    PassesCost: 75.6",
+									"    PassesCost: 8.85",
 									"  }",
 									"]",
 									"",
 									"pm.test(\"Response has correct values\", function() {",
-									"    pm.expect(responseJson.PPOList).to.be.eql(correctValues);",
-									"})",
+									"    for (op1 of responseJson.PPOList) {",
+									"        let op2 = correctValues.find(x => op1.VisitingOperator === x.VisitingOperator);",
+									"        pm.expect(op2.PassesCost).to.be.eql(op1.PassesCost);",
+									"    }",
+									"});",
 									""
 								],
 								"type": "text/javascript"
@@ -2059,17 +2055,17 @@
 							"variable": [
 								{
 									"key": "op_ID",
-									"value": "aodos",
+									"value": "kentriki_odos",
 									"description": "Operator ID"
 								},
 								{
 									"key": "date_from",
-									"value": "20210101",
+									"value": "20201001",
 									"description": "Start of specified period "
 								},
 								{
 									"key": "date_to",
-									"value": "20210501",
+									"value": "20201101",
 									"description": "End of specified period "
 								}
 							]
@@ -2262,7 +2258,7 @@
 									"});",
 									"",
 									"pm.test(\"SettlementsList contains the right fields\", function () {",
-									"    pm.expect(responseJson.SettlementsList[0]).to.have.keys(['OperatorCredited', 'OperatorDebited', 'DateFrom', 'DateTo', 'Amount', 'Status']);",
+									"    pm.expect(responseJson.SettlementsList[0]).to.have.keys(['SettlementID', 'OperatorCredited', 'OperatorDebited', 'DateFrom', 'DateTo', 'Amount', 'Status']);",
 									"});",
 									"",
 									"pm.test(\"SettlementsList fields are in the correct format\", function () {",
@@ -2273,7 +2269,31 @@
 									"    pm.expect(responseJson.SettlementsList[0].Amount).to.be.a('number');",
 									"    pm.expect(responseJson.SettlementsList[0].Status).to.be.a('number');",
 									"});",
-									""
+									"",
+									"pm.test(\"Settlement calculations are correct\", function () {",
+									"    let correctCalculations = [",
+									"            {",
+									"                OperatorCredited: 'aodos',",
+									"                OperatorDebited: 'egnatia',",
+									"                Amount: 70.7",
+									"            }, {",
+									"                OperatorCredited: 'nea_odos',",
+									"                OperatorDebited: 'egnatia',",
+									"                Amount: 46.9",
+									"            }, {",
+									"                OperatorCredited: 'gefyra',",
+									"                OperatorDebited: 'egnatia',",
+									"                Amount: 13.55",
+									"            }",
+									"        ];",
+									"",
+									"        for (settlement of correctCalculations) {",
+									"            let x = responseJson.SettlementsList.find(st => st.OperatorCredited === settlement.OperatorCredited",
+									"                && st.OperatorDebited === settlement.OperatorDebited && st.DateFrom === '2021-01-01'",
+									"                && st.DateTo === '2021-07-01');",
+									"            pm.expect(x.Amount).to.be.eql(settlement.Amount);",
+									"        }",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -2303,12 +2323,12 @@
 							"variable": [
 								{
 									"key": "date_from",
-									"value": "{{date_from}}",
+									"value": "20210101",
 									"description": "Start of specified period"
 								},
 								{
 									"key": "date_to",
-									"value": "{{date_to}}",
+									"value": "20210701",
 									"description": "End of specified period"
 								}
 							]
@@ -2342,12 +2362,12 @@
 									"variable": [
 										{
 											"key": "date_from",
-											"value": "{{date_from}}",
+											"value": "20210101",
 											"description": "Start of specified period"
 										},
 										{
 											"key": "date_to",
-											"value": "{{date_to}}",
+											"value": "20210701",
 											"description": "End of specified period"
 										}
 									]
@@ -2371,15 +2391,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "4351"
+									"value": "3305"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"10ff-VRPptJL+1mMp2cDmZ5xFe73j+M8\""
+									"value": "W/\"ce9-fAC/oF3+VyJYPYhdN/V+1t23i0A\""
 								},
 								{
 									"key": "Date",
-									"value": "Wed, 19 Jan 2022 18:45:12 GMT"
+									"value": "Tue, 01 Feb 2022 19:36:51 GMT"
 								},
 								{
 									"key": "Connection",
@@ -2391,7 +2411,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"PeriodFrom\": \"2020-10-10\",\n    \"PeriodTo\": \"2021-10-10\",\n    \"TotalSettlements\": 32,\n    \"CompletedSettlements\": 18,\n    \"PendingSettlements\": 14,\n    \"SettlementsList\": [\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 8.4,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 0.4,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.5,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.5,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"kentriki_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 3.25,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 1.5,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.9,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 4.7,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 1.5,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 1.25,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 8.4,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"kentriki_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 3.25,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"moreas\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 3.5,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.9,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 1.25,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 18.05,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 18.05,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 4.2,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 0.4,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"moreas\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 3.5,\n            \"Status\": 1\n        },\n        {\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 4.2,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"nea_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 5.7,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 4.7,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 2.8,\n            \"Status\": 0\n        },\n        {\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"nea_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-01-07\",\n            \"Amount\": 5.7,\n            \"Status\": 1\n        }\n    ]\n}"
+							"body": "{\n    \"PeriodFrom\": \"2021-01-01\",\n    \"PeriodTo\": \"2021-07-01\",\n    \"TotalSettlements\": 21,\n    \"CompletedSettlements\": 16,\n    \"PendingSettlements\": 5,\n    \"SettlementsList\": [\n        {\n            \"SettlementID\": 5,\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 70.7,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 11,\n            \"OperatorCredited\": \"gefyra\",\n            \"OperatorDebited\": \"aodos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 127,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 17,\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 109.8,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 23,\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 115.75,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 29,\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"nea_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 88.45,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 35,\n            \"OperatorCredited\": \"aodos\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 54.7,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 41,\n            \"OperatorCredited\": \"gefyra\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 13.55,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 47,\n            \"OperatorCredited\": \"egnatia\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 29.6,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 53,\n            \"OperatorCredited\": \"moreas\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 16.8,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 59,\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 46.9,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 65,\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"egnatia\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 0.35,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 71,\n            \"OperatorCredited\": \"gefyra\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 42.4,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 77,\n            \"OperatorCredited\": \"gefyra\",\n            \"OperatorDebited\": \"moreas\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 8.35,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 83,\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"gefyra\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 76.3,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 89,\n            \"OperatorCredited\": \"gefyra\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 52.55,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 95,\n            \"OperatorCredited\": \"moreas\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 7.5,\n            \"Status\": 1\n        },\n        {\n            \"SettlementID\": 101,\n            \"OperatorCredited\": \"nea_odos\",\n            \"OperatorDebited\": \"kentriki_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 71,\n            \"Status\": 0\n        },\n        {\n            \"SettlementID\": 107,\n            \"OperatorCredited\": \"kentriki_odos\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 38.3,\n            \"Status\": 0\n        },\n        {\n            \"SettlementID\": 113,\n            \"OperatorCredited\": \"moreas\",\n            \"OperatorDebited\": \"nea_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 49.55,\n            \"Status\": 0\n        },\n        {\n            \"SettlementID\": 119,\n            \"OperatorCredited\": \"moreas\",\n            \"OperatorDebited\": \"olympia_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 11.5,\n            \"Status\": 0\n        },\n        {\n            \"SettlementID\": 125,\n            \"OperatorCredited\": \"olympia_odos\",\n            \"OperatorDebited\": \"nea_odos\",\n            \"DateFrom\": \"2021-01-01\",\n            \"DateTo\": \"2021-07-01\",\n            \"Amount\": 17.8,\n            \"Status\": 0\n        }\n    ]\n}"
 						}
 					]
 				},
