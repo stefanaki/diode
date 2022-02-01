@@ -3,7 +3,7 @@ const pool = require('./../config/db');
 const sendResponse = require('../utilities/sendFormattedResponse');
 
 module.exports = async (req, res) => {
-	const { op1_ID, op2_ID, date_from, date_to } = req.body;
+	let { op1_ID, op2_ID, date_from, date_to } = req.body;
 	const format = 'YYYY-MM-DD HH:mm:ss';
 
 	if (op1_ID == op2_ID) {
@@ -12,13 +12,16 @@ module.exports = async (req, res) => {
 		});
 	}
 
+	date_from = moment(date_from, 'YYYYMMDD').format(format);
+	date_to = moment(date_to, 'YYYYMMDD').subtract(1, 'seconds').format(format);
+
 	const checkQuery = `
         SELECT operator_credited, operator_debited, date_from, date_to 
         FROM settlements 
         WHERE (
          ( (operator_credited = ? AND operator_debited = ?) OR (operator_credited = ? AND operator_debited = ? ) ) 
          AND 
-         ( (date_from > ? AND date_from < ? ) OR (date_to > ? AND date_from < ?) ) 
+         ( (date_from >= ? AND date_from <= ? ) OR (date_to >= ? AND date_from <= ?) ) 
 		 OR(
 		 ((operator_credited = ? AND operator_debited = ?) OR (operator_credited = ? AND operator_debited = ? )) 
 		 AND
@@ -111,8 +114,8 @@ module.exports = async (req, res) => {
 
 			sendResponse(req, res, 200, {
 				message: 'Settlement has been created successfully',
-				PeriodFrom: `${moment(date_from, 'YYYYMMDD').format(format)}`,
-				PeriodTo: `${moment(date_to, 'YYYYMMDD').format(format)}`,
+				PeriodFrom: `${moment(date_from, format).format(format)}`,
+				PeriodTo: `${moment(date_to, format).add(1, 'seconds').format(format)}`,
 				OperatorCredited: credited,
 				OperatorDebited: debited,
 				Amount: amount
