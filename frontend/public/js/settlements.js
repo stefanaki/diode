@@ -9,6 +9,7 @@ const picker = new Litepicker({
 	inlineMode: true,
 	setup: function (picker) {
 		picker.on('selected', function (date1, date2) {
+			date2.dateInstance.setDate(date2.dateInstance.getDate() + 1);
 			console.log(date1.format('YYYYMMDD') + ' - ' + date2.format('YYYYMMDD'));
 			loadSettlements(date1.format('YYYYMMDD'), date2.format('YYYYMMDD'));
 		});

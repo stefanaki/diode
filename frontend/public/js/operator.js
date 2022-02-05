@@ -500,7 +500,7 @@ const loadData = async (current, datefrom, dateto) => {
 						data: incomes
 					},
 					{
-						label: `Debts`,
+						label: `Debt`,
 						borderColor: 'rgba(255, 99, 132)',
 						backgroundColor: 'rgba(255, 99, 132, 0.2)',
 						borderWidth: 1,
@@ -513,7 +513,7 @@ const loadData = async (current, datefrom, dateto) => {
 				plugins: {
 					title: {
 						display: true,
-						text: `Earnings and Debts per Operator`
+						text: `Income and Debt per Operator`
 					}
 				}
 			}
@@ -525,7 +525,7 @@ const loadData = async (current, datefrom, dateto) => {
 				labels: operators.map((op) => op.op_abbr),
 				datasets: [
 					{
-						label: `Total Income`,
+						label: `Net Income`,
 						borderColor: 'rgba(54, 162, 235)',
 						backgroundColor: 'rgba(54, 162, 235, 0.2)',
 						borderWidth: 1,
@@ -541,7 +541,7 @@ const loadData = async (current, datefrom, dateto) => {
 					},
 					title: {
 						display: true,
-						text: `Total Income`
+						text: `Net Income/Debt per Operator`
 					}
 				}
 			}
