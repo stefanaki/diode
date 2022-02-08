@@ -59,6 +59,16 @@ module.exports = async ({ rounds }) => {
 			file: null
 		},
 		{
+			cmd: `se2108 settlements --create --op1 aodos --op2 egnatia --datefrom 20201010 --dateto 20211010`,
+			out: `Bad request: The settlement overlaps with existing settlement\n`,
+			file: null
+		},
+		{
+			cmd: `se2108 settlements --verify --settlid 1`,
+			out: `You need payment service provider privileges to execute this endpoint\n`,
+			file: null
+		},
+		{
 			cmd: `se2108 passescost --op1 aodos --op2 egnatia --datefrom 20200101 --dateto 2021-01-01 --format csv`,
 			out: `Bad request: Invalid date formats\n`,
 			file: null
@@ -104,7 +114,6 @@ module.exports = async ({ rounds }) => {
 				}
 			}
 			console.log('\n------------------\n');
-			// await new Promise((resolve) => setTimeout(resolve, 100));
 		}
 	}
 
