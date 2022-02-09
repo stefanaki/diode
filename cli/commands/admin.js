@@ -134,5 +134,7 @@ module.exports = async ({ usermod, username, passw, users, passesupd, source }) 
 	} catch (error) {
 		console.log('Something went wrong...');
 		console.error(error.message);
+	} finally {
+		db.end();
 	}
 };
