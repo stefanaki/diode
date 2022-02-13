@@ -52,6 +52,13 @@ const unhide = () => {
 	document.querySelector('#passes').classList.remove('d-none');
 };
 
+const hide = () => {
+	document.querySelector('#myTab').classList.add('d-none');
+	document.querySelector('#charges').classList.add('d-none');
+	document.querySelector('#stations').classList.add('d-none');
+	document.querySelector('#passes').classList.add('d-none');
+};
+
 document.querySelector('#operators').addEventListener('change', () => {
 	if (picker.getDate()) {
 		let to = picker.getEndDate();
@@ -359,8 +366,6 @@ const loadData = async (current, datefrom, dateto) => {
 			stationNames.push(st.st_name);
 		});
 
-		console.log(stations);
-
 		let otherOperatorsList = document.querySelector('#otheroperators');
 		let selection = otherOperatorsList.value;
 		otherOperatorsList.innerHTML = '';
@@ -624,9 +629,10 @@ const loadData = async (current, datefrom, dateto) => {
 		});
 	} catch (error) {
 		if (error.response) {
-			if (error.response.status === 402)
+			if (error.response.status === 402) {
 				createAlert('No data for specified time period', 'info');
-			else createAlert(error.response.data.message, 'danger');
+				hide();
+			} else createAlert(error.response.data.message, 'danger');
 
 			if (error.response.data.message === 'Invalid token') {
 				localStorage.setItem(
