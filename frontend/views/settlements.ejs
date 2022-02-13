@@ -2,6 +2,7 @@
 <html lang="en">
 	<%- include('./partials/head'); %>
 	<script src="/js/redirect.js"></script>
+	<script defer src="/js/moment.min.js"></script>
 	<script defer src="/js/alert.js"></script>
 	<script defer src="/js/logout.js"></script>
 	<script defer src="/js/chart.min.js"></script>
@@ -19,6 +20,10 @@
 			<div class="d-flex flex-column justify-content-between align-items-center mt-3">
 				<div class="mb-3" id="litepicker"></div>
 			</div>
+
+			<h5 class="text-center d-none m-3" id="date-text">
+				Data from YYYY-MM-DD 00:00 until YYYY-MM-DD 23:59
+			</h5>
 
 			<div style="height: 400px; width: 100%">
 				<canvas id="settlementsGraph"></canvas>

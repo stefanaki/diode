@@ -174,6 +174,13 @@ const loadSettlements = async (from, to) => {
 
 		$('#tbl').DataTable();
 		drawPie(settlements);
+		document.querySelector('#date-text').classList.remove('d-none');
+		document.querySelector('#date-text').innerHTML = `Data from ${moment(
+			from,
+			'YYYYMMDD'
+		).format('YYYY-MM-DD HH:mm')} until ${moment(to, 'YYYYMMDD')
+			.subtract(1, 'second')
+			.format('YYYY-MM-DD HH:mm')}`;
 	} catch (error) {
 		if (error.response) {
 			if (error.response.status === 402)

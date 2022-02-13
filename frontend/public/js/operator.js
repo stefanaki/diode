@@ -50,13 +50,7 @@ const unhide = () => {
 	document.querySelector('#charges').classList.remove('d-none');
 	document.querySelector('#stations').classList.remove('d-none');
 	document.querySelector('#passes').classList.remove('d-none');
-};
-
-const hide = () => {
-	document.querySelector('#myTab').classList.add('d-none');
-	document.querySelector('#charges').classList.add('d-none');
-	document.querySelector('#stations').classList.add('d-none');
-	document.querySelector('#passes').classList.add('d-none');
+	document.querySelector('#date-text').classList.remove('d-none');
 };
 
 document.querySelector('#operators').addEventListener('change', () => {
@@ -546,7 +540,7 @@ const loadData = async (current, datefrom, dateto) => {
 					},
 					title: {
 						display: true,
-						text: `Net Income/Debt per Operator`
+						text: `Net Income / Debt per Operator`
 					}
 				}
 			}
@@ -627,11 +621,17 @@ const loadData = async (current, datefrom, dateto) => {
 				}
 			}
 		});
+
+		document.querySelector('#date-text').innerHTML = `Data from ${moment(
+			datefrom,
+			'YYYYMMDD'
+		).format('YYYY-MM-DD HH:mm')} until ${moment(dateto, 'YYYYMMDD')
+			.subtract(1, 'second')
+			.format('YYYY-MM-DD HH:mm')}`;
 	} catch (error) {
 		if (error.response) {
 			if (error.response.status === 402) {
 				createAlert('No data for specified time period', 'info');
-				hide();
 			} else createAlert(error.response.data.message, 'danger');
 
 			if (error.response.data.message === 'Invalid token') {
