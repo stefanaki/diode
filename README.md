@@ -46,7 +46,9 @@ In order to get the all the components of the application up and running on your
 
 1. Get Docker
 2. Clone the codebase  
-   `$ git clone https://github.com/ntua/TL21-08.git`
+   ```
+   $ git clone https://github.com/ntua/TL21-08.git
+   ```
 3. In the main directory of the repository, `TL21-08`, type the following command:
     ```
     $ sudo ./install.sh
