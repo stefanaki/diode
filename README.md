@@ -45,15 +45,19 @@ Other libraries and tools:
 In order to get the all the components of the application up and running on your machine quickly, Docker is required.
 
 1. Get Docker, Node.js
-2. Clone the codebase  
-   ```
-   $ git clone https://github.com/ntua/TL21-08.git
-   ```
+2. Clone the codebase
+    ```
+    $ git clone https://github.com/ntua/TL21-08.git
+    ```
 3. In the main directory of the repository, `TL21-08`, type the following command:
     ```
     $ sudo ./install.sh
     ```
-4. On success, the following paths should be exposed to the user:
+4. Run the containers by typing:
+    ```
+    $ docker compose up
+    ```
+5. On success, the following paths should be exposed to the user:
     - API: https://localhost:9103/interoperability/api
     - Frontend: http://localhost:8000
 
