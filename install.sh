@@ -41,6 +41,7 @@ then
     printf "\u2714\n"
 else
     printf "\u2714\nError while building Docker containers. Make sure Docker is installed and running."
+    exit 1
 fi
 
 printf "\nDone. Type 'docker compose up' to run the application.\n"
