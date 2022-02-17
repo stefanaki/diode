@@ -36,11 +36,11 @@ printf "\u2714\n"
 # Docker containers for Back-end, Front-end, MySQL, Redis
 cd ..
 printf "Building Docker containers... "
-if docker compose build > /dev/null 2>&1
+if (docker-compose build || docker compose build) > /dev/null 2>&1
 then
     printf "\u2714\n"
 else
-    printf "\u2714\nError while building Docker containers. Make sure Docker is installed and running."
+    printf "\u2714\nError while building Docker containers. Make sure Docker is installed and running.\n"
     exit 1
 fi
 
