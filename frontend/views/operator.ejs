@@ -2,21 +2,18 @@
 <html lang="en">
 	<%- include('./partials/head'); %>
 	<script src="/js/redirect.js"></script>
-	<script
-		defer
-		src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
-	></script>
+	<script defer src="/js/moment.min.js"></script>
 	<script defer src="/js/alert.js"></script>
 	<script defer src="/js/logout.js"></script>
 	<script defer src="/js/chart.min.js"></script>
 	<script defer src="/js/operator.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+	<script src="/js/litepicker.js"></script>
 
 	<body>
 		<div id="alerts" class="d-none"></div>
 		<%- include('./partials/navbar'); %>
 
-		<div class="my-container border">
+		<div class="my-container border shadow">
 			<h2 class="mt-3 text-center">Logistic Data and Analytics</h2>
 			<h6 class="mb-3 text-center text-muted">
 				for Operators and Transportation Authorities
@@ -29,6 +26,9 @@
 					</div>
 					<div class="mb-3" id="litepicker"></div>
 				</div>
+				<h5 class="text-center d-none m-3" id="date-text">
+					Data from YYYY-MM-DD 00:00 until YYYY-MM-DD 23:59
+				</h5>
 				<ul
 					class="nav nav-tabs d-flex justify-content-center mb-3 d-none"
 					id="myTab"

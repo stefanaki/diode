@@ -9,6 +9,7 @@ const picker = new Litepicker({
 	inlineMode: true,
 	setup: function (picker) {
 		picker.on('selected', function (date1, date2) {
+			date2.dateInstance.setDate(date2.dateInstance.getDate() + 1);
 			console.log(date1.format('YYYYMMDD') + ' - ' + date2.format('YYYYMMDD'));
 			loadSettlements(date1.format('YYYYMMDD'), date2.format('YYYYMMDD'));
 		});
@@ -173,6 +174,13 @@ const loadSettlements = async (from, to) => {
 
 		$('#tbl').DataTable();
 		drawPie(settlements);
+		document.querySelector('#date-text').classList.remove('d-none');
+		document.querySelector('#date-text').innerHTML = `Data from ${moment(
+			from,
+			'YYYYMMDD'
+		).format('YYYY-MM-DD HH:mm')} until ${moment(to, 'YYYYMMDD')
+			.subtract(1, 'second')
+			.format('YYYY-MM-DD HH:mm')}`;
 	} catch (error) {
 		if (error.response) {
 			if (error.response.status === 402)

@@ -34,4 +34,6 @@ app.use('/interoperability/api/settlements', auth('user'), SettlementRouter);
 app.use('/interoperability/api/admin', auth('admin'), AdminRouter);
 app.use('*', (req, res) => res.status(404).json({ message: 'Bad request: Endpoint not found' }));
 
-server.listen(port, () => console.log(`It's alive on https://localhost:${port}`));
+server.listen(port, () =>
+	console.log(`Back-end server started running on https://localhost:${port}/`)
+);

@@ -50,6 +50,7 @@ const unhide = () => {
 	document.querySelector('#charges').classList.remove('d-none');
 	document.querySelector('#stations').classList.remove('d-none');
 	document.querySelector('#passes').classList.remove('d-none');
+	document.querySelector('#date-text').classList.remove('d-none');
 };
 
 document.querySelector('#operators').addEventListener('change', () => {
@@ -359,8 +360,6 @@ const loadData = async (current, datefrom, dateto) => {
 			stationNames.push(st.st_name);
 		});
 
-		console.log(stations);
-
 		let otherOperatorsList = document.querySelector('#otheroperators');
 		let selection = otherOperatorsList.value;
 		otherOperatorsList.innerHTML = '';
@@ -500,7 +499,7 @@ const loadData = async (current, datefrom, dateto) => {
 						data: incomes
 					},
 					{
-						label: `Debts`,
+						label: `Debt`,
 						borderColor: 'rgba(255, 99, 132)',
 						backgroundColor: 'rgba(255, 99, 132, 0.2)',
 						borderWidth: 1,
@@ -513,7 +512,7 @@ const loadData = async (current, datefrom, dateto) => {
 				plugins: {
 					title: {
 						display: true,
-						text: `Earnings and Debts per Operator`
+						text: `Income and Debt per Operator`
 					}
 				}
 			}
@@ -525,7 +524,7 @@ const loadData = async (current, datefrom, dateto) => {
 				labels: operators.map((op) => op.op_abbr),
 				datasets: [
 					{
-						label: `Total Income`,
+						label: `Net Income`,
 						borderColor: 'rgba(54, 162, 235)',
 						backgroundColor: 'rgba(54, 162, 235, 0.2)',
 						borderWidth: 1,
@@ -541,7 +540,7 @@ const loadData = async (current, datefrom, dateto) => {
 					},
 					title: {
 						display: true,
-						text: `Total Income`
+						text: `Net Income / Debt per Operator`
 					}
 				}
 			}
@@ -622,11 +621,18 @@ const loadData = async (current, datefrom, dateto) => {
 				}
 			}
 		});
+
+		document.querySelector('#date-text').innerHTML = `Data from ${moment(
+			datefrom,
+			'YYYYMMDD'
+		).format('YYYY-MM-DD HH:mm')} until ${moment(dateto, 'YYYYMMDD')
+			.subtract(1, 'second')
+			.format('YYYY-MM-DD HH:mm')}`;
 	} catch (error) {
 		if (error.response) {
-			if (error.response.status === 402)
+			if (error.response.status === 402) {
 				createAlert('No data for specified time period', 'info');
-			else createAlert(error.response.data.message, 'danger');
+			} else createAlert(error.response.data.message, 'danger');
 
 			if (error.response.data.message === 'Invalid token') {
 				localStorage.setItem(

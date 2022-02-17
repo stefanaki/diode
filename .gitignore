@@ -1,0 +1,10 @@
+db
+
+backend/node_modules
+backend/dump.rdb
+
+cli/node_modules
+
+frontend/node_modules
+
+test-cli/node_modules
