@@ -14,7 +14,7 @@ module.exports = async ({ station, datefrom, dateto, format }) => {
 		if (token.length === 0) return console.log('Please log in first.');
 
 		const passesPerStation = await axios({
-			url: `https://localhost:9103/interoperability/api/PassesPerStation/${station}/${datefrom}/${dateto}`,
+			url: `${process.env.API_URL}/interoperability/api/PassesPerStation/${station}/${datefrom}/${dateto}`,
 			method: 'get',
 			params: { format },
 			headers: {

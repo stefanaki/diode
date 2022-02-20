@@ -9,7 +9,7 @@ module.exports = async () => {
 		if (token.length === 0) return console.log('Please log in first.');
 
 		const healthCheck = await axios({
-			url: 'https://localhost:9103/interoperability/api/admin/healthcheck',
+			url: `${process.env.API_URL}/interoperability/api/admin/healthcheck`,
 			method: 'get',
 			headers: {
 				'X-OBSERVATORY-AUTH': token

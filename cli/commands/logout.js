@@ -10,7 +10,7 @@ module.exports = async () => {
 		if (token.length === 0) return console.log('Please log in first.');
 
 		const logout = await axios({
-			url: 'https://localhost:9103/interoperability/api/logout',
+			url: `${process.env.API_URL}/interoperability/api/logout`,
 			method: 'post',
 			headers: {
 				'X-OBSERVATORY-AUTH': token

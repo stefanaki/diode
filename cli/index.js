@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 const { program } = require('commander');
 
+require('dotenv').config();
+
 program.version('1.0.0').description('Diode CLI Tool - softeng21-08');
 
 program
