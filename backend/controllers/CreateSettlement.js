@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
 			let pc1 = q1[0][0].PassesCost ? q1[0][0].PassesCost : 0;
 			let pc2 = q2[0][0].PassesCost ? q2[0][0].PassesCost : 0;
 
-			let amount = Math.abs(pc2 - pc1);
+			let amount = parseFloat(Math.abs(pc2 - pc1).toFixed(2));
 			let status = 0;
 
 			let credited, debited;
@@ -93,7 +93,7 @@ module.exports = async (req, res) => {
 				]);
 			}
 			if (pc1 < pc2) {
-				// op2 is credited and op1 is debited
+				// op2 is credited and op1 is credited
 				credited = op2_ID;
 				debited = op1_ID;
 				await connection.query(insertquery, [
