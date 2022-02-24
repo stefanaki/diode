@@ -6,11 +6,11 @@ const prompt = require('prompt-sync')();
 
 const db = mysql
 	.createConnection({
-		port: process.env.DB_PORT,
-		user: process.env.DB_USER,
-		password: process.env.DB_PASSWORD,
-		host: process.env.DB_HOST,
-		database: process.env.DB_NAME
+		port: '33060',
+		user: 'root',
+		password: 'rootroot123',
+		host: 'localhost',
+		database: 'diode_io'
 	})
 	.promise();
 
@@ -29,7 +29,10 @@ module.exports = async ({ usermod, username, passw, users, passesupd, source }) 
 		if (token.length === 0) return console.log('Please log in first.');
 
 		try {
-			const payload = jwt.verify(token, process.env.TOKEN_KEY);
+			const payload = jwt.verify(
+				token,
+				'15fd3487b261ba14c69e0964bde543a267ffeade0c4f42933f5ff5c49998e71c0b05cb849bf5e2af426010d374789825dae02e61254a4c0b959173e0dd355dea'
+			);
 			if (payload.type !== 'admin') {
 				return console.log('Please log in with an admin account first');
 			}

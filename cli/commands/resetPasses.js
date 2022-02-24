@@ -10,7 +10,7 @@ module.exports = async () => {
 		if (token.length === 0) return console.log('Please log in first.');
 
 		const resetPasses = await axios({
-			url: `${process.env.API_URL}/interoperability/api/admin/resetpasses`,
+			url: `https://localhost:9103/interoperability/api/admin/resetpasses`,
 			method: 'post',
 			headers: {
 				'X-OBSERVATORY-AUTH': token

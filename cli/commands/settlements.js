@@ -26,7 +26,7 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
 
 		if (verify) {
 			const verifySettlement = await axios({
-				url: `${process.env.API_URL}/interoperability/api/settlements/VerifySettlement`,
+				url: `https://localhost:9103/interoperability/api/settlements/VerifySettlement`,
 				method: 'post',
 				headers: {
 					'X-OBSERVATORY-AUTH': token
@@ -40,7 +40,7 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
 
 		if (create) {
 			const createSettlement = await axios({
-				url: `${process.env.API_URL}/interoperability/api/settlements/CreateSettlement`,
+				url: `https://localhost:9103/interoperability/api/settlements/CreateSettlement`,
 				method: 'post',
 				headers: {
 					'X-OBSERVATORY-AUTH': token
@@ -65,7 +65,7 @@ module.exports = async ({ verify, settlid, list, create, op1, op2, datefrom, dat
 
 		if (list) {
 			const listSettlements = await axios({
-				url: `${process.env.API_URL}/interoperability/api/settlements/GetSettlements/${datefrom}/${dateto}`,
+				url: `https://localhost:9103/interoperability/api/settlements/GetSettlements/${datefrom}/${dateto}`,
 				method: 'get',
 				headers: {
 					'X-OBSERVATORY-AUTH': token
