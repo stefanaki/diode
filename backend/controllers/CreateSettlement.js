@@ -80,12 +80,12 @@ module.exports = async (req, res) => {
 
 			let credited, debited;
 			if (pc1 > pc2) {
-				// op1 is debited and op2 is credited
-				credited = op2_ID;
-				debited = op1_ID;
+				// op1 is credited and op2 is debited
+				credited = op1_ID;
+				debited = op2_ID;
 				await connection.query(insertquery, [
-					op2_ID,
 					op1_ID,
+					op2_ID,
 					date_from,
 					date_to,
 					amount,
@@ -93,12 +93,12 @@ module.exports = async (req, res) => {
 				]);
 			}
 			if (pc1 < pc2) {
-				// op2 is debited and op1 is credited
-				credited = op1_ID;
-				debited = op2_ID;
+				// op2 is credited and op1 is debited
+				credited = op2_ID;
+				debited = op1_ID;
 				await connection.query(insertquery, [
-					op1_ID,
 					op2_ID,
+					op1_ID,
 					date_from,
 					date_to,
 					amount,
