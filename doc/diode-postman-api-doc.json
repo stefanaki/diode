@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ce1f3c4a-b438-47c0-ba15-36289ba992b4",
+		"_postman_id": "8a871af9-1073-49d7-b975-d5100ac6baa7",
 		"name": "Diode API",
 		"description": "DiodeIO RESTful API for Toll Station Interoperability Data\n\n## Base URL\nUse ```https://localhost:9103/interoperability/api/```for all your requests.\n\n## Date Formatting\nEvery endpoint that requires a date field must be populated with a date of the format ```YYYYMMDD```, otherwise the server will respond with an invalid date format error.\n\n## JSON & CSV Functionality\nEvery available endpoint can respond with either JSON or CSV format. You have to specify your desired response type in the query parameter ```format={json|csv}```. By default the API will respond with JSON.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -2273,16 +2273,16 @@
 									"pm.test(\"Settlement calculations are correct\", function () {",
 									"    let correctCalculations = [",
 									"            {",
-									"                OperatorCredited: 'aodos',",
-									"                OperatorDebited: 'egnatia',",
+									"                OperatorCredited: 'egnatia',",
+									"                OperatorDebited: 'aodos',",
 									"                Amount: 70.7",
 									"            }, {",
-									"                OperatorCredited: 'nea_odos',",
-									"                OperatorDebited: 'egnatia',",
+									"                OperatorCredited: 'egnatia',",
+									"                OperatorDebited: 'nea_odos',",
 									"                Amount: 46.9",
 									"            }, {",
-									"                OperatorCredited: 'gefyra',",
-									"                OperatorDebited: 'egnatia',",
+									"                OperatorCredited: 'egnatia',",
+									"                OperatorDebited: 'gefyra',",
 									"                Amount: 13.55",
 									"            }",
 									"        ];",
@@ -2468,7 +2468,7 @@
 								},
 								{
 									"key": "date_from",
-									"value": "20190107",
+									"value": "20190701",
 									"description": "Start of specified time period",
 									"type": "text"
 								},
@@ -2522,7 +2522,7 @@
 										},
 										{
 											"key": "date_from",
-											"value": "20190107",
+											"value": "20190701",
 											"description": "Start of specified time period",
 											"type": "text"
 										},
@@ -2563,15 +2563,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "205"
+									"value": "203"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"cd-7rb/fyXYu1KuL5nZVsNyZ2XHtsI\""
+									"value": "W/\"cb-VHybck5BpC7qPtWCx9jucRtG7b0\""
 								},
 								{
 									"key": "Date",
-									"value": "Wed, 19 Jan 2022 19:15:39 GMT"
+									"value": "Thu, 24 Feb 2022 22:49:01 GMT"
 								},
 								{
 									"key": "Connection",
@@ -2583,7 +2583,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"message\": \"Settlement has been created successfully\",\n    \"PeriodFrom\": \"2019-01-07 00:00:00\",\n    \"PeriodTo\": \"2020-01-01 00:00:00\",\n    \"OperatorCredited\": \"kentriki_odos\",\n    \"OperatorDebited\": \"olympia_odos\",\n    \"Amount\": 49.75\n}"
+							"body": "{\n    \"message\": \"Settlement has been created successfully\",\n    \"PeriodFrom\": \"2019-07-01 00:00:00\",\n    \"PeriodTo\": \"2020-01-01 00:00:00\",\n    \"OperatorCredited\": \"olympia_odos\",\n    \"OperatorDebited\": \"kentriki_odos\",\n    \"Amount\": 1.1\n}"
 						}
 					]
 				},
