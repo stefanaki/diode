@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Semestrial student project for the course "Software Engineering" taught at ECE NTUA 2022. The project deals with the problem of interoperability between different toll stations and manages the debts of every partner operator to all the others, as well as pass events at every toll booth and deposit settlements. It consists of a RESTful API, a CLI application and a frontend web application.
+Semestrial student project for the course "Software Engineering" taught at ECE NTUA 2022. The project deals with the problem of interoperability between different toll stations and manages the debts of every partner operator to all the others, as well as pass events at every toll booth and deposit settlements. It consists of a RESTful API, a CLI application and a frontend web application which is deployed on https://softeng21-08.herokuapp.com/.
 
 ## Functionality
 
